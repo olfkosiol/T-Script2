@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hast du ne Freundin?</title>
+    <style>
+        /* Dark Mode Design */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #121212; /* Dunkler Hintergrund */
+            color: #e0e0e0; /* Helle Schrift */
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #1e1e1e; /* Dunklerer Container */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); /* Leichter Schatten */
+        }
+        h1, p {
+            text-align: center;
+            color: #ffffff; /* Weiße Schrift für Überschrift */
+        }
+        .progress-container {
+            background-color: #2c2c2c;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            height: 20px;
+        }
+        .progress-bar {
+            background-color: #6200ea;
+            width: 0%;
+            height: 100%;
+            /* Wir nutzen Keyframes, daher kein static transition hier */
+        }
+
+        /* Keyframe-Animation für den Fortschrittsbalken
+           Wir nutzen zwei Variablen: --initial-width und --target-width.
+           So animieren wir von der vorherigen Breite zur neuen Breite. */
+        @keyframes growProgress {
+            from {
+                width: var(--initial-width);
+            }
+            to {
+                width: var(--target-width);
+            }
+        }
+
+        /* Klasse, die die Animation anstößt */
+        .animate-progress {
+            animation: growProgress 0.5s ease-in-out forwards;
+        }
+
+        .question {
+            margin-top: 20px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+        .options {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .option, .submit-btn {
+            background-color: #6200ea; /* Lila Button */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            text-align: center;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        .option:hover, .submit-btn:hover {
+            background-color: #7c43bd; /* Helleres Lila bei Hover */
+            transform: scale(1.05); /* Button vergrößert sich leicht */
+        }
+        .option:active, .submit-btn:active {
+            transform: scale(0.95); /* Button schrumpft leicht beim Klick */
+        }
+        .input-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        input[type="number"] {
+            background-color: #1e1e1e;
+            color: #ffffff;
+            border: 1px solid #6200ea;
+            border-radius: 5px;
+            padding: 10px;
+            width: 80%;
+        }
+        .result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #ffffff; /* Weiße Schrift für Ergebnis */
+        }
+        .year-probability {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .year-probability p {
+            color: #bb86fc; /* Helle Farbe für Wahrscheinlichkeiten */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hast du ne Freundin?</h1>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <p>Bitti beantworte die folgenden Fragen:</p>
+        <div class="question" id="question"></div>
+        <div class="options" id="options"></div>
+        <div class="input-container" id="input-container" style="display: none;">
+            <input type="number" id="number-input" placeholder="Deine Antwort hier eingeben">
+            <button class="submit-btn" onclick="handleNumberAnswer()">Abschickeni</button>
+        </div>
+        <div class="result" id="result"></div>
+        <div class="year-probability" id="year-probability"></div>
+    </div>
+    
+    <script>
+        const questions = [
+            {
+                text: "Was ist dein Sternzeichen?",
+                options: [
+                    "Widder", "Stier", "Zwillinge", "Krebs", "Löwe", "Jungfrau", 
+                    "Waage", "Skorpion", "Schütze", "Steinbock", "Wassermann", "Fische"
+                ],
+                type: "button"
+            },
+            {
+                text: "Wie viele Fortnite-Skins besitzt du?",
+                type: "input"
+            },
+            {
+                text: "Gelb, Blau, Zeitung-lesen oder Toaster?",
+                options: ["Gelb", "Blau", "Zeitung-lesen", "Toaster"],
+                type: "button"
+            },
+            {
+                text: "Was empfandst du als gutes Date?",
+                options: [
+                    "Ein Handyspiel spielen", 
+                    "Einen Toaster kaufen", 
+                    "6 Stunden League of Legends Douqueue", 
+                    "Ein Eis auf die Hand und dann zu mir"
+                ],
+                type: "button"
+            },
+            {
+                text: "Welcher ist dein Lieblings-Superheld?",
+                options: ["Titan Speakerman", "Titan TV Man", "Titan Cameraman", "Skibidi Bib Bub"],
+                type: "button"
+            },
+            {
+                text: "Welche dieser 3 Punkte sind dir bei einem Partner am wichtigsten?",
+                options: ["Die Person ist echt", "Die Person ist nett", "Die Person ist hübsch"],
+                type: "button"
+            },
+            {
+                text: "Deine Lieblings-7-stellige Quadratzahl mit einer 7 und einer 3?",
+                type: "input"
+            },
+            {
+                text: "Wie sehr glaubst du an Mathematik (1–10)?",
+                type: "input"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let baseProbability = 20;
+        let day = 0;
+        let month = 0;
+        let reduceProbability = 0;
+        let oldProgress = 0; // Alte Fortschrittsvariable speichern
+
+        const progressBar = document.getElementById("progress-bar");
+        const questionDiv = document.getElementById("question");
+        const optionsDiv = document.getElementById("options");
+        const inputContainer = document.getElementById("input-container");
+        const numberInput = document.getElementById("number-input");
+        const resultDiv = document.getElementById("result");
+        const yearProbDiv = document.getElementById("year-probability");
+
+        function updateProgressBar() {
+            const newProgress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            
+            // Setze vorherige und neue Breite als CSS-Variablen
+            progressBar.style.setProperty('--initial-width', oldProgress + '%');
+            progressBar.style.setProperty('--target-width', newProgress + '%');
+
+            // Klasse entfernen, um Animation neu abspielen zu können
+            progressBar.classList.remove('animate-progress');
+            void progressBar.offsetWidth; // Reflow erzwingen
+            progressBar.classList.add('animate-progress');
+
+            // Aktualisiere alten Fortschrittswert
+            oldProgress = newProgress;
+        }
+
+        function displayQuestion() {
+            updateProgressBar();
+            const question = questions[currentQuestionIndex];
+            if (!question) return; // Falls es keine weitere Frage gibt, beenden
+            questionDiv.textContent = question.text;
+            optionsDiv.innerHTML = ""; // Clear previous options
+            inputContainer.style.display = "none"; // Hide input container
+
+            if (question.type === "button") {
+                question.options.forEach((optionText, index) => {
+                    const button = document.createElement("button");
+                    button.textContent = optionText;
+                    button.className = "option";
+                    button.addEventListener("click", () => handleAnswer(index + 1));
+                    optionsDiv.appendChild(button);
+                });
+            } else if (question.type === "input") {
+                inputContainer.style.display = "block";
+                numberInput.value = ""; // Clear previous input
+            }
+        }
+
+        function handleAnswer(answer) {
+            if (currentQuestionIndex === 3 && answer === 3) {
+                showAlternativeEnding();
+                return;
+            }
+            processAnswer(answer);
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                displayQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function handleNumberAnswer() {
+            const answer = parseInt(numberInput.value);
+            if (!isNaN(answer)) {
+                processAnswer(answer);
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    displayQuestion();
+                } else {
+                    finishQuiz();
+                }
+            } else {
+                alert("Bitti gib eine gültige Zahl ein.");
+            }
+        }
+
+        function processAnswer(answer) {
+            if (currentQuestionIndex === 0) {
+                baseProbability += ((answer - 6) * 2);
+                day += (answer * 50);
+            } else if (currentQuestionIndex === 1) {
+                baseProbability += answer * 0.6;
+                day += (answer * 30);
+            } else if (currentQuestionIndex === 2) {
+                if (answer === 1) baseProbability += 2;
+                if (answer === 2) baseProbability += 1;
+                if (answer === 3) baseProbability += 6;
+                if (answer === 4) baseProbability -= 3;
+                day += (answer * 100);
+            } else if (currentQuestionIndex === 4) {
+                if (answer === 1) baseProbability += 5; // Titan Speakerman
+                if (answer === 2) baseProbability += 3; // Titan TV Man
+                if (answer === 3) baseProbability += 7; // Titan Cameraman
+                if (answer === 4) baseProbability += 10; // Skibidi Bib Bub
+                day += (answer * 250);
+            } else if (currentQuestionIndex === 5) {
+                if (answer === 1) baseProbability += 6;
+                if (answer === 2) baseProbability += 4;
+                if (answer === 3) baseProbability += 2;
+                day += (answer * 200);
+            } else if (currentQuestionIndex === 6) {
+                baseProbability += answer ** 2 * 0.00005;
+            } else if (currentQuestionIndex === 7) {
+                baseProbability += (answer - 3) * 2;
+            }
+        }
+
+        function showAlternativeEnding() {
+            questionDiv.style.display = "none";
+            optionsDiv.style.display = "none";
+            inputContainer.style.display = "none";
+            resultDiv.innerHTML = `<p>Glückwunschi, du hast das alternative Ende erreicht. Jetzt konzentrier dich weiter auf die Kluft!</p>`;
+            yearProbDiv.innerHTML = "";
+        }
+
+        function finishQuiz() {
+            questionDiv.style.display = "none";
+            optionsDiv.style.display = "none";
+            inputContainer.style.display = "none";
+            calculateResults();
+        }
+
+        function calculateResults() {
+            baseProbability = Math.min(Math.max(baseProbability, 10), 50);
+            month = day % 12 || 12;
+            day = (day % 31) + 1;
+
+            const months = [
+                "Januar", "Februar", "März", "April", "Mai", "Juni",
+                "Juli", "August", "September", "Oktober", "November", "Dezember"
+            ];
+            const dateString = `${day}. ${months[month - 1]}`;
+
+            const yearProbabilities = {};
+            for (let year = 2025; year <= 2035; year++) {
+                let probability = baseProbability + ((year - 2025) * 1.5);
+                if (reduceProbability === 1) probability = 0;
+                probability = Math.min(Math.max(probability, 0), 100);
+                yearProbabilities[year] = probability;
+            }
+
+            resultDiv.textContent = `Mathemann sagt, du wirst am ${dateString} jemanden treffen, der supi zu dir passen wird!`;
+            yearProbDiv.innerHTML = "<h3>Wahrscheinlichkeit bis zum Jahr:</h3>";
+            for (let year = 2025; year <= 2035; year++) {
+                yearProbDiv.innerHTML += `<p>Bis zum Jahr ${year}: ${Math.round(yearProbabilities[year])}%</p>`;
+            }
+        }
+
+        displayQuestion();
+    </script>
+</body>
+</html>

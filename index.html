@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>T-Script2</title>
+    <style>
+        :root {
+            /* Light Mode Farben */
+            --bg-light: #f0f0f0;
+            --text-light: #000000;
+            --container-light: #ffffff;
+            --button-bg-light: #6200ea;
+            --button-hover-light: #7c43bd;
+            
+            /* Dark Mode Farben */
+            --bg-dark: #121212;
+            --text-dark: #e0e0e0;
+            --container-dark: #1e1e1e;
+            --button-bg-dark: #6200ea;
+            --button-hover-dark: #7c43bd;
+            
+            --primary-color: #6200ea;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body.light-mode {
+            background-color: var(--bg-light);
+            color: var(--text-light);
+        }
+
+        .top-bar {
+            background-color: var(--container-dark);
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 20px; /* Größerer Balken */
+        }
+
+        body.light-mode .top-bar {
+            background-color: var(--container-light);
+            border-bottom: 1px solid #ccc;
+        }
+
+        .dark-mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: var(--button-bg-dark);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s ease;
+        }
+
+        .dark-mode-toggle:hover {
+            background-color: var(--button-hover-dark);
+        }
+
+        body.light-mode .dark-mode-toggle {
+            background-color: var(--button-bg-light);
+        }
+
+        body.light-mode .dark-mode-toggle:hover {
+            background-color: var(--button-hover-light);
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-left, .nav-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-left {
+            margin-right: auto;
+        }
+
+        .nav-right {
+            margin-left: auto;
+        }
+
+        .logo {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 0 20px;
+            color: var(--text-dark);
+            white-space: nowrap;
+            text-decoration: none;
+        }
+
+        body.light-mode .logo {
+            color: var(--text-light);
+        }
+
+        /* Klassen für Links in der Navigation */
+        .nav-link {
+            background-color: var(--button-bg-dark);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background-color: var(--button-hover-dark);
+            transform: scale(1.05);
+        }
+
+        body.light-mode .nav-link {
+            background-color: var(--button-bg-light);
+            color: #fff;
+        }
+
+        body.light-mode .nav-link:hover {
+            background-color: var(--button-hover-light);
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .column {
+            background: var(--container-dark);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        body.light-mode .column {
+            background: var(--container-light);
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .left-column {
+            flex: 0 0 300px;
+        }
+
+        .right-column {
+            flex: 0 0 300px;
+        }
+
+        .middle-column {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .column h2, .column h1, .column h3 {
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .left-column h2 {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Ratio */
+            height: 0;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .video-container iframe {
+            position: absolute;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+        }
+
+        .left-column p {
+            text-align: center;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .middle-column h1 {
+            font-size: 1.5em;
+        }
+
+        .middle-column p {
+            text-align: center;
+        }
+
+        .start-btn {
+            display: inline-block;
+            background-color: var(--button-bg-dark);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 20px auto 0 auto;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            text-align: center;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            text-decoration: none;
+        }
+
+        .start-btn:hover {
+            background-color: var(--button-hover-dark);
+            transform: scale(1.05);
+        }
+
+        body.light-mode .start-btn {
+            background-color: var(--button-bg-light);
+        }
+
+        body.light-mode .start-btn:hover {
+            background-color: var(--button-hover-light);
+        }
+
+        .right-column {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-style: italic;
+            color: #bbb;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <button class="dark-mode-toggle" id="dark-mode-toggle" aria-label="Dark Mode umschalten">🌙</button>
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="spiele.html" class="nav-link">Spiele</a>
+                <a href="shop.html" class="nav-link">Shop</a>
+            </div>
+            <!-- Logo als Link zur Startseite -->
+            <a href="index.html" class="logo">T-Script2</a>
+            <div class="nav-right">
+                <a href="uns.html" class="nav-link">Über uns</a>
+                <a href="impressum.html" class="nav-link">Impressum</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- Linke Spalte: Neues -->
+        <div class="column left-column">
+            <h2>Neues</h2>
+            <h3>Unsere neuste Ankündigung</h3>
+            <div class="video-container">
+                <iframe 
+                    src="https://www.youtube.com/embed/eEfRGEDgu6w" 
+                    title="YouTube video player" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+            <p>Wir suchen Spieletester!  
+            Bewirb dich unter:  
+            Bolfkosiol@gmail.com</p>
+        </div>
+
+        <!-- Mittlere Spalte: Willkommen -->
+        <div class="column middle-column">
+            <h1>Willkommen bei T-Script2</h1>
+            <p>Hier kannst du bald das Spiel "Hast du ne Freundin?" starten.  
+               Bis dahin kannst du dich umschauen oder einfach später noch einmal vorbeischauen!</p>
+            <a href="spiel.html" class="start-btn">Zum Spiel</a>
+        </div>
+
+        <!-- Rechte Spalte: Platzhalter -->
+        <div class="column right-column">
+            Demnächst mehr...
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 T-Script2</p>
+    </footer>
+
+    <script>
+        // Dark Mode Toggle
+        const toggleBtn = document.getElementById('dark-mode-toggle');
+        toggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+        });
+    </script>
+</body>
+</html>

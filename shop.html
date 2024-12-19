@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>T-Script2 - Shop</title>
+    <style>
+        :root {
+            /* Light Mode Farben */
+            --bg-light: #f0f0f0;
+            --text-light: #000000;
+            --container-light: #ffffff;
+            --button-bg-light: #6200ea;
+            --button-hover-light: #7c43bd;
+            
+            /* Dark Mode Farben */
+            --bg-dark: #121212;
+            --text-dark: #e0e0e0;
+            --container-dark: #1e1e1e;
+            --button-bg-dark: #6200ea;
+            --button-hover-dark: #7c43bd;
+            
+            --primary-color: #6200ea;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body.light-mode {
+            background-color: var(--bg-light);
+            color: var(--text-light);
+        }
+
+        .top-bar {
+            background-color: var(--container-dark);
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 20px;
+        }
+
+        body.light-mode .top-bar {
+            background-color: var(--container-light);
+            border-bottom: 1px solid #ccc;
+        }
+
+        .dark-mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: var(--button-bg-dark);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s ease;
+        }
+
+        .dark-mode-toggle:hover {
+            background-color: var(--button-hover-dark);
+        }
+
+        body.light-mode .dark-mode-toggle {
+            background-color: var(--button-bg-light);
+        }
+
+        body.light-mode .dark-mode-toggle:hover {
+            background-color: var(--button-hover-light);
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-left, .nav-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-left {
+            margin-right: auto;
+        }
+
+        .nav-right {
+            margin-left: auto;
+        }
+
+        .logo {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 0 20px;
+            color: var(--text-dark);
+            white-space: nowrap;
+            text-decoration: none;
+        }
+
+        body.light-mode .logo {
+            color: var(--text-light);
+        }
+
+        .nav-link {
+            background-color: var(--button-bg-dark);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background-color: var(--button-hover-dark);
+            transform: scale(1.05);
+        }
+
+        body.light-mode .nav-link {
+            background-color: var(--button-bg-light);
+            color: #fff;
+        }
+
+        body.light-mode .nav-link:hover {
+            background-color: var(--button-hover-light);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .main-content p {
+            text-align: center;
+            font-size: 1.2em;
+            max-width: 600px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <button class="dark-mode-toggle" id="dark-mode-toggle" aria-label="Dark Mode umschalten">🌙</button>
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="spiele.html" class="nav-link">Spiele</a>
+                <a href="index.html" class="nav-link">Home</a>
+            </div>
+            <a href="index.html" class="logo">T-Script2</a>
+            <div class="nav-right">
+                <a href="uns.html" class="nav-link">Über uns</a>
+                <a href="impressum.html" class="nav-link">Impressum</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <p>Bald können Sie hier ausgewählte Produkte kaufen.</p>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 T-Script2</p>
+    </footer>
+
+    <script>
+        // Dark Mode Toggle
+        const toggleBtn = document.getElementById('dark-mode-toggle');
+        toggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+        });
+    </script>
+</body>
+</html>
