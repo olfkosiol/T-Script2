@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Luca Bot</title>
+    <style>
+        :root {
+            /* Light Mode Farben */
+            --bg-light: #f0f0f0;
+            --text-light: #000000;
+            --container-light: #ffffff;
+            --button-bg-light: #6200ea;
+            --button-hover-light: #7c43bd;
+            
+            /* Dark Mode Farben */
+            --bg-dark: #121212;
+            --text-dark: #e0e0e0;
+            --container-dark: #1e1e1e;
+            --button-bg-dark: #6200ea;
+            --button-hover-dark: #7c43bd;
+            
+            --primary-color: #6200ea;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .top-bar {
+            background-color: var(--container-dark);
+            border-bottom: 1px solid #333;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            box-sizing: border-box;
+            max-width: 600px;
+            margin: 100px auto 0 auto;
+            overflow-y: auto;
+            max-height: 800px;
+        }
+
+        .message {
+            background: var(--container-dark);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+
+        body.light-mode .message {
+            background: var(--container-light);
+            color: var(--text-light);
+        }
+
+        .message.user {
+            background: #007BFF;
+            color: #fff;
+            align-self: flex-end;
+        }
+
+        .input-container {
+            display: flex;
+            padding: 10px;
+            box-sizing: border-box;
+            border-top: 1px solid #333;
+        }
+
+        .input-container input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: var(--container-dark);
+            color: var(--text-dark);
+            margin-right: 10px;
+        }
+
+        body.light-mode .input-container input {
+            background: var(--container-light);
+            color: var(--text-light);
+        }
+
+        .input-container button {
+            background-color: var(--button-bg-dark);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .input-container button:hover {
+            background-color: var(--button-hover-dark);
+            transform: scale(1.05);
+        }
+
+        body.light-mode .input-container button {
+            background-color: var(--button-bg-light);
+        }
+
+        body.light-mode .input-container button:hover {
+            background-color: var(--button-hover-light);
+        }
+
+        .dark-mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: var(--button-bg-dark);
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s ease;
+        }
+
+        .dark-mode-toggle:hover {
+            background-color: var(--button-hover-dark);
+        }
+
+        body.light-mode .dark-mode-toggle {
+            background-color: var(--button-bg-light);
+            color: #fff;
+        }
+
+        body.light-mode .dark-mode-toggle:hover {
+            background-color: var(--button-hover-light);
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            opacity: 0.8;
+        }
+
+        /* Overlay für Triggerwarnung */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width:100%;
+            height:100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items:center;
+            justify-content:center;
+            z-index:1000;
+        }
+
+        .overlay-content {
+            background: var(--container-dark);
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        body.light-mode .overlay-content {
+            background: var(--container-light);
+            color: var(--text-light);
+        }
+
+        .overlay-content h2 {
+            margin-top:0;
+            margin-bottom:20px;
+        }
+
+        .overlay-content p {
+            margin-bottom:20px;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+
+        .overlay-content button {
+            background-color: var(--button-bg-dark);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .overlay-content button:hover {
+            background-color: var(--button-hover-dark);
+            transform: scale(1.05);
+        }
+
+        body.light-mode .overlay-content button {
+            background-color: var(--button-bg-light);
+            color: #fff;
+        }
+
+        body.light-mode .overlay-content button:hover {
+            background-color: var(--button-hover-light);
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <button class="dark-mode-toggle" id="dark-mode-toggle">🌙</button>
+        <h1>Luca Bot</h1>
+    </div>
+
+    <!-- Overlay für Triggerwarnung -->
+    <div class="overlay" id="overlay">
+        <div class="overlay-content">
+            <h2>Triggerwarnung</h2>
+            <p>Diese Simulation könnte verstörende Szenen oder Aussagen enthalten.  
+               Bitte sei darauf vorbereitet, dass manche Inhalte unangenehm wirken könnten.</p>
+            <button id="continue-btn">Weiter</button>
+        </div>
+    </div>
+
+    <div class="chat-container" id="chat-container"></div>
+
+    <div class="input-container">
+        <input type="text" id="user-input" placeholder="Schreibe eine Nachricht..." />
+        <button id="send-btn">Senden</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 T-Script2</p>
+    </footer>
+
+    <script>
+        const darkModeBtn = document.getElementById('dark-mode-toggle');
+        darkModeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+        });
+
+        const messages = [
+            "Guten Morgen alles gut spiele später wieder Dart bitte push mich",
+            "yes",
+            "Habe heute wieder Darts trainiert",
+            "Dann hatten wir wenigstens beide einen guten Tag",
+            "Können echt stolz auf uns sein",
+            "Diiiiiiie Lakeinenhorde",
+            "Ja müssen zusammenhalten schaffen das als Team",
+            "Müssen uns gegenseitig weiter pushen",
+            "Hier mein neues Video https://www.youtube.com/@Winterformel37",
+            "Krass viel Spaß",
+            "Wollen wir mal ein handyspiel spielen",
+            "Komm packen wir mädchen Faust darauf",
+            "Du bist echt nett und hübsch",
+            "Danke dass du mit mir schreibst",
+            "Sorry aber es ist meine Wahrheit #Dreamteam",
+            "Ja sorry aber du warst echt geil",
+            "#Wirhaltenzusammenoder?",
+            "#Binichgeradedeinschutzengeloder?",
+            "#Magstdumich?",
+            "Du bist echt hübsch und warst schön angezogen",
+            "#Zusammensindwirstark",
+            "#Ichlassdichniemalsimstich"
+        ];
+
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const overlay = document.getElementById('overlay');
+        const continueBtn = document.getElementById('continue-btn');
+
+        continueBtn.addEventListener('click', () => {
+            overlay.style.display = 'none';
+        });
+
+        function addMessage(text, isUser = false) {
+            const msg = document.createElement('div');
+            msg.classList.add('message');
+            if (isUser) msg.classList.add('user');
+            msg.textContent = text;
+            chatContainer.appendChild(msg);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        sendBtn.addEventListener('click', () => {
+            const inputText = userInput.value.trim();
+            if (inputText !== "") {
+                addMessage(inputText, true);
+                userInput.value = "";
+                // Bot antwortet
+                const botResponse = messages[Math.floor(Math.random() * messages.length)];
+                setTimeout(() => {
+                    addMessage(botResponse, false);
+                }, 500); // kurze Verzögerung für Realismus
+            }
+        });
+
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                sendBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
