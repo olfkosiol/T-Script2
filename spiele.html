@@ -233,13 +233,11 @@
         <button class="dark-mode-toggle" id="dark-mode-toggle" aria-label="Dark Mode umschalten">🌙</button>
         <div class="nav-container">
             <div class="nav-left">
-                <!-- Links angepasst: Home, Shop -->
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="shop.html" class="nav-link">Shop</a>
             </div>
             <a href="index.html" class="logo">T-Script2</a>
             <div class="nav-right">
-                <!-- Rechts: Über uns, Impressum -->
                 <a href="uns.html" class="nav-link">Über uns</a>
                 <a href="impressum.html" class="nav-link">Impressum</a>
             </div>
@@ -249,7 +247,6 @@
     <div class="main-content">
         <h1>Unsere Spiele</h1>
         <div class="game-grid">
-            <!-- Erstes Spiel: Luca Bot -->
             <div class="game-card">
                 <img src="https://via.placeholder.com/200x100" alt="Luca Bot">
                 <h2>Luca Bot</h2>
@@ -257,7 +254,6 @@
                 <a href="lucanot.html" class="button">Jetzt spielen</a>
             </div>
             
-            <!-- Zweites Spiel: Hastu ne Freundin? -->
             <div class="game-card">
                 <img src="https://via.placeholder.com/200x100" alt="Hastu ne Freundin?">
                 <h2>Hastu ne Freundin?</h2>
@@ -265,7 +261,13 @@
                 <a href="hasufreundin.html" class="button">Jetzt spielen</a>
             </div>
 
-            <!-- Drittes Spiel: T-Script2 -->
+            <div class="game-card">
+                <img src="https://via.placeholder.com/200x100" alt="T-Tris Tscript 2.5">
+                <h2>T-Tris Tscript 2.5</h2>
+                <p>Das beliebte Puzzlespiel neu interpretiert.</p>
+                <a href="ttris.html" class="button">Jetzt spielen</a>
+            </div>
+
             <div class="game-card">
                 <img src="https://via.placeholder.com/200x100" alt="T-Script2">
                 <h2>T-Script2</h2>
@@ -273,12 +275,11 @@
                 <a href="tscript2.html" class="button">Jetzt spielen</a>
             </div>
 
-            <!-- Viertes Spiel: T-Tris Tscript 2.5 -->
             <div class="game-card">
-                <img src="https://via.placeholder.com/200x100" alt="T-Tris Tscript 2.5">
-                <h2>T-Tris Tscript 2.5</h2>
-                <p>Das beliebte Puzzlespiel neu interpretiert.</p>
-                <a href="ttris.html" class="button">Jetzt spielen</a>
+                <img src="https://via.placeholder.com/200x100" alt="Die da oben grrr">
+                <h2>Übersetzer</h2>
+                <p>Regieri bösi :(</p>
+                <a href="geheim.html" class="button">Jetzt spielen</a>
             </div>
         </div>
     </div>
@@ -288,7 +289,6 @@
     </footer>
 
     <script>
-        // Dark Mode Toggle
         const toggleBtn = document.getElementById('dark-mode-toggle');
         toggleBtn.addEventListener('click', () => {
             document.body.classList.toggle('light-mode');
