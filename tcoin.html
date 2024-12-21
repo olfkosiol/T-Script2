@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T-Coin</title>
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --text-light: #e0e0e0;
+            --container-dark: #1e1e1e;
+            --primary-color: #6200ea;
+            --button-bg: #6200ea;
+            --button-hover: #7c43bd;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            background-color: var(--container-dark);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .top-bar h1 {
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .top-bar a {
+            text-decoration: none;
+            background-color: var(--button-bg);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .top-bar a:hover {
+            background-color: var(--button-hover);
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .section {
+            background-color: var(--container-dark);
+            border-radius: 8px;
+            padding: 20px;
+            flex: 1;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .section h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+        }
+
+        canvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .balance-container {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-container label {
+            font-size: 1.1em;
+        }
+
+        .form-container input {
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #333;
+            color: var(--text-light);
+        }
+
+        .form-container button, .action-buttons button {
+            background-color: var(--button-bg);
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .form-container button:hover, .action-buttons button:hover {
+            background-color: var(--button-hover);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: var(--container-dark);
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="top-bar">
+        <a href="shop.html">Zurück zum Shop</a>
+        <h1>T-Coin Dashboard</h1>
+    </div>
+
+    <div class="main-content">
+        <!-- Graph Section -->
+        <div class="section">
+            <h2>T-Coin Kurs</h2>
+            <div class="chart-container">
+                <canvas id="priceChart"></canvas>
+            </div>
+            <div class="balance-container">
+                <p>Aktueller Bestand: <span id="currentBalance">0</span> T-Coins</p>
+                <p>Wert: <span id="currentValue">0.00</span> EUR</p>
+            </div>
+        </div>
+
+        <!-- Buy/Sell Section -->
+        <div class="section">
+            <h2>T-Coin kaufen/verkaufen</h2>
+            <div class="action-buttons">
+                <button id="buyButton">Kaufen</button>
+                <button id="sellButton">Verkaufen</button>
+            </div>
+            <div class="form-container">
+                <label for="amount">Betrag (T-Coin):</label>
+                <input type="number" id="amount" placeholder="Anzahl der T-Coins" />
+
+                <label for="price">Preis pro T-Coin:</label>
+                <input type="number" id="price" placeholder="Preis in EUR" disabled value="2.50" />
+
+                <button id="transactionButton">Aktion ausführen</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2024 T-Coin. Alle Rechte vorbehalten.
+    </footer>
+
+    <script>
+        function getLast7Days() {
+            const dates = [];
+            const today = new Date();
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(today.getDate() - i);
+                dates.push(date.toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric' }));
+            }
+            return dates;
+        }
+
+        function getDeterministicData() {
+            const data = [];
+            const today = new Date();
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(today.getDate() - i);
+                const seed = date.getFullYear() + date.getMonth() + date.getDate();
+                const value = 2.5 + (seed % 0.5) + Math.sin(seed) * 0.25;
+                data.push(Math.round(value * 100) / 100);
+            }
+            return data;
+        }
+
+        function updateBalanceValue() {
+            const balance = parseInt(document.getElementById('currentBalance').textContent);
+            const currentPrice = parseFloat(document.getElementById('price').value);
+            const value = balance * currentPrice;
+            document.getElementById('currentValue').textContent = value.toFixed(2);
+        }
+
+        const ctx = document.getElementById('priceChart').getContext('2d');
+        const priceChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: getLast7Days(),
+                datasets: [{
+                    label: 'T-Coin Wert (EUR)',
+                    data: getDeterministicData(),
+                    borderColor: 'rgba(98, 0, 234, 1)',
+                    backgroundColor: 'rgba(98, 0, 234, 0.2)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            color: 'white'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.2)' },
+                        ticks: { color: 'white' }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.2)' },
+                        ticks: { color: 'white' }
+                    }
+                }
+            }
+        });
+
+        const buyButton = document.getElementById('buyButton');
+        const sellButton = document.getElementById('sellButton');
+
+        buyButton.addEventListener('click', () => alert('Diese Funktion ist aktuell noch nicht verfügbar.'));
+        sellButton.addEventListener('click', () => alert('Diese Funktion ist aktuell noch nicht verfügbar.'));
+
+        const transactionButton = document.getElementById('transactionButton');
+        transactionButton.addEventListener('click', () => alert('Transaktion ausgeführt.'));
+
+        updateBalanceValue();
+    </script>
+</body>
+</html>
