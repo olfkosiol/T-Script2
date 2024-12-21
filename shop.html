@@ -144,17 +144,60 @@
         .main-content {
             flex: 1;
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
+            gap: 20px;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             padding: 20px;
             box-sizing: border-box;
         }
 
-        .main-content p {
+        .section {
+            background-color: var(--container-dark);
+            color: var(--text-dark);
+            border-radius: 8px;
+            padding: 30px;
+            width: 400px;
             text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .section h2 {
+            margin-top: 0;
+            font-size: 1.8em;
+        }
+
+        .section p {
             font-size: 1.2em;
-            max-width: 600px;
+            margin: 15px 0;
+        }
+
+        .section a {
+            display: inline-block;
+            background-color: var(--button-bg-dark);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .section a:hover {
+            background-color: var(--button-hover-dark);
+        }
+
+        body.light-mode .section {
+            background-color: var(--container-light);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-mode .section a {
+            background-color: var(--button-bg-light);
+        }
+
+        body.light-mode .section a:hover {
+            background-color: var(--button-hover-light);
         }
 
         footer {
@@ -181,7 +224,19 @@
     </div>
 
     <div class="main-content">
-        <p>Bald können Sie hier ausgewählte Produkte kaufen.</p>
+        <div class="section">
+            <h2>Merch</h2>
+            <p>Aktuell nicht verfügbar</p>
+        </div>
+        <div class="section">
+            <h2>Spiele</h2>
+            <p>Aktuell nicht verfügbar</p>
+        </div>
+        <div class="section">
+            <h2>T-Coin</h2>
+            <p>Verwalte und kaufe T-Coins!</p>
+            <a href="tcoin.html">Zur T-Coin-Seite</a>
+        </div>
     </div>
 
     <footer>
