@@ -183,6 +183,13 @@
     </footer>
 
     <script>
+        let balance = 0;
+        let currentPrice = parseFloat(document.getElementById('price').value);
+
+        const priceHistory = []; // Array für Preis-Historie
+        const labels = getLast7Days(); // Labels für die letzten 7 Tage
+
+        // Funktion für die letzten 7 Tage (z.B. Mo, Di, Mi,...)
         function getLast7Days() {
             const dates = [];
             const today = new Date();
@@ -194,34 +201,72 @@
             return dates;
         }
 
-        function getDeterministicData() {
-            const data = [];
-            const today = new Date();
-            for (let i = 6; i >= 0; i--) {
-                const date = new Date();
-                date.setDate(today.getDate() - i);
-                const seed = date.getFullYear() + date.getMonth() + date.getDate();
-                const value = 2.5 + (seed % 0.5) + Math.sin(seed) * 0.25;
-                data.push(Math.round(value * 100) / 100);
+        // Funktion, um den Kurs dynamisch zu aktualisieren
+        function updatePrice() {
+            currentPrice = Math.round((2.5 + Math.random() * 0.5) * 100) / 100;
+            document.getElementById('price').value = currentPrice.toFixed(2);
+            priceHistory.push(currentPrice); // Füge neuen Preis der Historie hinzu
+            if (priceHistory.length > 7) {
+                priceHistory.shift(); // Lösche den ältesten Wert, wenn mehr als 7 Werte vorhanden sind
             }
-            return data;
+            updateBalanceValue();
+            updateGraph();
         }
 
+        // Funktion, um den aktuellen Bestandswert zu berechnen
         function updateBalanceValue() {
-            const balance = parseInt(document.getElementById('currentBalance').textContent);
-            const currentPrice = parseFloat(document.getElementById('price').value);
             const value = balance * currentPrice;
+            document.getElementById('currentBalance').textContent = balance;
             document.getElementById('currentValue').textContent = value.toFixed(2);
         }
 
+        // Funktion für das Update des Graphen
+        function updateGraph() {
+            priceChart.data.datasets[0].data = priceHistory;
+            priceChart.update();
+        }
+
+        // Kauf-Button
+        document.getElementById('buyButton').addEventListener('click', () => {
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (amount > 0) {
+                balance += amount;
+                updateBalanceValue();
+                alert(`${amount} T-Coins erfolgreich gekauft!`);
+            } else {
+                alert('Bitte geben Sie eine gültige Anzahl ein.');
+            }
+        });
+
+        // Verkauf-Button
+        document.getElementById('sellButton').addEventListener('click', () => {
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (amount > 0 && amount <= balance) {
+                balance -= amount;
+                updateBalanceValue();
+                alert(`${amount} T-Coins erfolgreich verkauft!`);
+            } else if (amount > balance) {
+                alert('Nicht genügend T-Coins auf Ihrem Konto.');
+            } else {
+                alert('Bitte geben Sie eine gültige Anzahl ein.');
+            }
+        });
+
+        // Dynamisches Update des Kurses alle 10 Sekunden
+        setInterval(updatePrice, 10000);
+
+        // Initiale Anzeige
+        updateBalanceValue();
+
+        // Erstellen des Graphen
         const ctx = document.getElementById('priceChart').getContext('2d');
         const priceChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: getLast7Days(),
+                labels: labels,
                 datasets: [{
-                    label: 'T-Coin Wert (EUR)',
-                    data: getDeterministicData(),
+                    label: 'T-Coin Kurs (EUR)',
+                    data: priceHistory,
                     borderColor: 'rgba(98, 0, 234, 1)',
                     backgroundColor: 'rgba(98, 0, 234, 0.2)',
                     borderWidth: 2,
@@ -251,17 +296,6 @@
                 }
             }
         });
-
-        const buyButton = document.getElementById('buyButton');
-        const sellButton = document.getElementById('sellButton');
-
-        buyButton.addEventListener('click', () => alert('Diese Funktion ist aktuell noch nicht verfügbar.'));
-        sellButton.addEventListener('click', () => alert('Diese Funktion ist aktuell noch nicht verfügbar.'));
-
-        const transactionButton = document.getElementById('transactionButton');
-        transactionButton.addEventListener('click', () => alert('Transaktion ausgeführt.'));
-
-        updateBalanceValue();
     </script>
 </body>
 </html>
