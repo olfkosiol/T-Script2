@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nachricht Verschlüsseln & Entschlüsseln</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            text-align: center;
+            color: #6200ea;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        textarea, input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: none;
+            background: #333;
+            color: #e0e0e0;
+        }
+
+        button {
+            background-color: #6200ea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #7c43bd;
+        }
+
+        .result {
+            font-size: 1.2em;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Nachricht Verschlüsseln & Entschlüsseln</h1>
+        <label for="input-text">Nachricht eingeben:</label>
+        <textarea id="input-text" rows="4" placeholder="Geben Sie Ihre Nachricht ein..."></textarea>
+
+        <label for="operation-type">Operation wählen:</label>
+        <select id="operation-type">
+            <option value="encrypt">Verschlüsseln</option>
+            <option value="decrypt">Entschlüsseln</option>
+        </select>
+
+        <button onclick="processMessage()">Nachricht Verarbeiten</button>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        const encryptionMatrix = {
+            'a': '24', 'b': '30', 'c': '31', 'd': '32', 'e': '33',
+            'f': '34', 'g': '40', 'h': '41', 'i': '42', 'j': '43',
+            'k': '44', 'l': '00', 'm': '01', 'n': '02', 'o': '03',
+            'p': '04', 'q': 'Q', 'r': '10', 's': '11', 't': '12',
+            'u': '13', 'v': '14', 'w': '20', 'x': '21', 'y': '22', 'z': '23'
+        };
+
+        // Umgekehrte Matrix für die Entschlüsselung
+        const decryptionMatrix = Object.fromEntries(
+            Object.entries(encryptionMatrix).map(([key, value]) => [value, key])
+        );
+
+        function processMessage() {
+            const inputText = document.getElementById('input-text').value.trim();
+            const operationType = document.getElementById('operation-type').value;
+            const resultDiv = document.getElementById('result');
+
+            let outputMessage = '';
+
+            if (operationType === 'encrypt') {
+                // Verschlüsseln
+                outputMessage = encryptMessage(inputText);
+            } else if (operationType === 'decrypt') {
+                // Entschlüsseln
+                outputMessage = decryptMessage(inputText);
+            }
+
+            resultDiv.textContent = `Ergebnis: ${outputMessage}`;
+        }
+
+        function encryptMessage(text) {
+            text = text.toLowerCase(); // Konvertiere Text in Kleinbuchstaben
+            let encryptedMessage = '';
+
+            for (const char of text) {
+                if (encryptionMatrix[char]) {
+                    encryptedMessage += encryptionMatrix[char] + ' ';
+                } else if (char === ' ') {
+                    encryptedMessage += '/ '; // Optional: Leerzeichen als '/' kodieren
+                } else {
+                    encryptedMessage += char + ' '; // Nicht-kodierte Zeichen bleiben erhalten
+                }
+            }
+
+            return encryptedMessage.trim();
+        }
+
+        function decryptMessage(text) {
+            const codes = text.split(' ');
+            let decryptedMessage = '';
+
+            for (const code of codes) {
+                if (decryptionMatrix[code]) {
+                    decryptedMessage += decryptionMatrix[code];
+                } else if (code === '/') {
+                    decryptedMessage += ' '; // Optional: '/' als Leerzeichen interpretieren
+                } else {
+                    decryptedMessage += code; // Nicht-dekodierte Zeichen bleiben erhalten
+                }
+            }
+
+            return decryptedMessage;
+        }
+    </script>
+</body>
+</html>
