@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -37,8 +38,30 @@
             color: var(--primary-color);
         }
 
+        .top-bar .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-button {
+            background-color: var(--button-bg);
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            text-decoration: none;
+        }
+
+        .nav-button:hover {
+            background-color: var(--button-hover);
+        }
+
         .main-content {
             display: flex;
+            flex-direction: row;
             flex: 1;
             padding: 20px;
             gap: 20px;
@@ -49,12 +72,13 @@
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            flex: 1;
         }
 
         .chart-container {
             position: relative;
             width: 100%;
-            height: 400px;
+            height: 300px;
         }
 
         canvas {
@@ -96,13 +120,19 @@
             background-color: var(--button-hover);
         }
 
-        /* Anpassung des Layouts für nebeneinander Darstellung */
+        /* Anpassung des Layouts */ 
         .chart-section {
-            flex: 3;
+            flex: 2;
         }
 
         .action-section {
-            flex: 2;
+            flex: 1;
+        }
+
+        .chart-header {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -110,18 +140,23 @@
 <body>
     <div class="top-bar">
         <h1>T-Coin Dashboard</h1>
+        <div class="nav-buttons">
+            <a href="shop.html" class="nav-button">Zum Shop</a>
+        </div>
     </div>
 
     <div class="main-content">
-        <!-- Graph Section -->
         <div class="section chart-section">
-            <h2>T-Coin Kurs (Echtzeit)</h2>
+            <div class="chart-header">T-Coin Kurs (Echtzeit)</div>
             <div class="chart-container">
                 <canvas id="priceChart"></canvas>
             </div>
+            <div class="chart-header">T-Coin Kurs der letzten Tage (Mitternacht)</div>
+            <div class="chart-container">
+                <canvas id="historicalChart"></canvas>
+            </div>
         </div>
 
-        <!-- Buy/Sell Section -->
         <div class="section action-section">
             <h2>T-Coin kaufen/verkaufen</h2>
             <div class="form-container">
@@ -129,7 +164,7 @@
                 <input type="number" id="amount" placeholder="Anzahl der T-Coins" />
 
                 <label for="price">Preis pro T-Coin:</label>
-                <input type="number" id="price" placeholder="Preis in EUR" disabled value="2.50" />
+                <input type="number" id="price" placeholder="Preis in EUR" disabled value="0.00" />
 
                 <button id="buyButton">Kaufen</button>
                 <button id="sellButton">Verkaufen</button>
@@ -141,15 +176,33 @@
     </div>
 
     <script>
-        // Startwerte für den Graphen
-        let dataPoints = [10, 20, 30, 50, 70, 90];
-        let labels = ['10s', '20s', '30s', '40s', '50s', '60s'];
-        let maxThreshold = 100;
-    
-        // Aktueller Bestand und Preis
+        function calculateTcoinPrice(hour = null, minute = null, day = null) {
+            const now = new Date();
+            const basePrice = 2.50; 
+            const hourFluctuation = Math.sin((hour ?? now.getHours()) / 24 * Math.PI * 2) * 0.2;
+            const dayFluctuation = Math.cos((day ?? now.getDate()) / 31 * Math.PI * 2) * 0.1;
+            const minuteFluctuation = Math.cos((minute ?? now.getMinutes()) / 60 * Math.PI * 2) * 0.05;
+            return (basePrice + hourFluctuation + dayFluctuation + minuteFluctuation).toFixed(2);
+        }
+
+        let dataPoints = [];
+        let labels = [];
+        for (let i = 0; i < 10; i++) {
+            const timestamp = new Date(Date.now() - (9 - i) * 60 * 1000);
+            labels.push(`${timestamp.getHours()}:${timestamp.getMinutes().toString().padStart(2, '0')}`);
+            dataPoints.push(calculateTcoinPrice(timestamp.getHours(), timestamp.getMinutes(), timestamp.getDate()));
+        }
+
+        let historicalDataPoints = [];
+        let historicalLabels = [];
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+            historicalLabels.push(`${date.getDate()}.${date.getMonth() + 1}`);
+            historicalDataPoints.push(calculateTcoinPrice(0, 0, date.getDate()));
+        }
+
         let currentBalance = 0;
-    
-        // Initialisierung des Graphen
+
         const ctx = document.getElementById('priceChart').getContext('2d');
         const priceChart = new Chart(ctx, {
             type: 'line',
@@ -181,43 +234,79 @@
                     y: {
                         grid: { color: 'rgba(255, 255, 255, 0.2)' },
                         ticks: { color: 'white' },
-                        suggestedMin: 0,
-                        suggestedMax: maxThreshold
+                        suggestedMin: 2.0,
+                        suggestedMax: 3.0
                     }
                 }
             }
         });
-    
-        // Echtzeitdaten-Update alle 10 Sekunden
-        function updateGraph() {
-            const nextValue = Math.floor(Math.random() * 120); // Zufälliger Preiswert
-            dataPoints.push(nextValue); // Wert hinzufügen
-            labels.push(`${labels.length + 1}0s`); // Zeit-Label aktualisieren
-    
-            if (nextValue > maxThreshold) {
-                maxThreshold = nextValue + 10;
-                priceChart.options.scales.y.suggestedMax = maxThreshold;
+
+        const ctxHistorical = document.getElementById('historicalChart').getContext('2d');
+        const historicalChart = new Chart(ctxHistorical, {
+            type: 'line',
+            data: {
+                labels: historicalLabels,
+                datasets: [{
+                    label: 'T-Coin Wert (Mitternacht)',
+                    data: historicalDataPoints,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: { color: 'white' }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.2)' },
+                        ticks: { color: 'white' }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.2)' },
+                        ticks: { color: 'white' },
+                        suggestedMin: 2.0,
+                        suggestedMax: 3.0
+                    }
+                }
             }
-    
-            if (dataPoints.length > 15) { // Älteste Daten entfernen, wenn >15 Werte vorhanden
+        });
+
+        function updateGraph() {
+            const now = new Date();
+            if (now.getSeconds() !== 0) return; // Nur zur vollen Minute aktualisieren
+
+            const nextValue = calculateTcoinPrice(now.getHours(), now.getMinutes(), now.getDate());
+            const label = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+            dataPoints.push(nextValue);
+            labels.push(label);
+
+            if (dataPoints.length > 10) {
                 dataPoints.shift();
                 labels.shift();
             }
-    
+
             priceChart.data.labels = labels;
             priceChart.data.datasets[0].data = dataPoints;
             priceChart.update();
-    
-            document.getElementById('price').value = nextValue.toFixed(2); // Preiswert aktualisieren
+
+            document.getElementById('price').value = nextValue;
         }
-    
-        setInterval(updateGraph, 10000); // Intervall: 10 Sekunden
-    
-        // Kaufen/Verkaufen Logik
+
+        setInterval(updateGraph, 1000);
+
         document.getElementById('buyButton').addEventListener('click', () => {
             const amount = parseFloat(document.getElementById('amount').value);
             const price = parseFloat(document.getElementById('price').value);
-    
+
             if (amount > 0) {
                 currentBalance += amount;
                 updateBalance(price);
@@ -226,11 +315,11 @@
                 alert('Bitte einen gültigen Betrag eingeben.');
             }
         });
-    
+
         document.getElementById('sellButton').addEventListener('click', () => {
             const amount = parseFloat(document.getElementById('amount').value);
             const price = parseFloat(document.getElementById('price').value);
-    
+
             if (amount > 0 && amount <= currentBalance) {
                 currentBalance -= amount;
                 updateBalance(price);
@@ -239,12 +328,14 @@
                 alert('Ungültiger Betrag oder nicht genug T-Coins verfügbar.');
             }
         });
-    
+
         function updateBalance(price) {
             const value = currentBalance * price;
             document.getElementById('currentBalance').textContent = `Aktueller Bestand: ${currentBalance} T-Coins`;
             document.getElementById('currentValue').textContent = `Wert: ${value.toFixed(2)} EUR`;
         }
-    </script>    
+
+        document.getElementById('price').value = calculateTcoinPrice();
+    </script>
 </body>
 </html>
