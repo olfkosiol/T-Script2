@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nihillingo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+            background: linear-gradient(to right, black, purple);
+            color: white;
+        }
+        .header {
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px black;
+            margin-bottom: 20px;
+        }
+        .quiz-container {
+            max-width: 500px;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+        }
+        .score-container {
+            position: absolute;
+            left: -150px;
+            top: 50%;
+            transform: translateY(-50%);
+            text-align: left;
+            font-size: 18px;
+        }
+        .option {
+            display: block;
+            margin: 10px;
+            padding: 10px;
+            background-color: rgba(200, 200, 200, 0.3);
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: white;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .option:hover {
+            background-color: rgba(200, 200, 200, 0.5);
+        }
+        .correct {
+            background-color: green !important;
+        }
+        .wrong {
+            background-color: red !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">Nihillingo</div>
+
+    <audio id="correct-sound" src="nihillingo/correct.mp3" preload="auto"></audio>
+    <audio id="wrong-sound" src="nihillingo/wrong.mp3" preload="auto"></audio>
+
+    <div class="quiz-container">
+        <div class="score-container">
+            <p>Richtig: <span id="correct-count">0</span></p>
+            <p>Fehler: <span id="wrong-count">0</span></p>
+        </div>
+        <h2>Welcher Charakter ist das?</h2>
+        <img id="character-image" src="" alt="Charakterbild" width="300">
+        <div id="options-container"></div>
+        <p id="feedback"></p>
+    </div>
+
+    <script>
+        let quizData = [
+            { name: "Bombardiro Crocodilo", image: "bombardiro.png" },
+            { name: "Tralalero Tralala", image: "tralalero.png" },
+            { name: "Lirili Larila", image: "lirili.png" },
+            { name: "La Vaca Saturno Saturnita", image: "lavaca.png" },
+            { name: "Bobrito Bandito", image: "bobrito.png" },
+            { name: "Brr Brr Patapim", image: "patapim.png" },
+            { name: "Tung Tung Tung Sahur", image: "tung.png" },
+            { name: "Boneca Ambalabu", image: "boneca.png" },
+            { name: "Il Cacto Hipopotamo", image: "cacto.png" },
+            { name: "Bumbumbini Guzzini", image: "guzzini.png" },
+            { name: "Cappuccino Asassino", image: "cappuccino.png" },
+            { name: "Glorbo Fruttodrillo", image: "glorbo.png" },
+            { name: "Frigo Camello Buffo Fardello", image: "camello.png" },
+            { name: "Tripi Tropi Tropa Tripa", image: "tripitropi.png" },
+            { name: "Trulimero Trilichina", image: "trulimero.png" },
+            { name: "Shimpanzinni Bananinni", image: "shimpanzinni.png" },
+            { name: "Frulli Frolla", image: "frulli.png" },
+            { name: "Tricki Tracka Tellas", image: "tricki.png" },
+            { name: "Cocofanto", image: "cocofanto.png" },
+            { name: "Tripi Tropa", image: "tripitropa.png" },
+            { name: "Giraffa Celeste", image: "giraffa.png" },
+            { name: "Bluberini Octopussini", image: "bluberini.png" },
+            { name: "Ecco Cavallo Virtuoso", image: "ecco.png" },
+            { name: "Trick Track Barabum", image: "tricktrack.png" },
+            { name: "Bananitta Dolphinitta", image: "bananitta.png" }
+        ];
+
+        let correctCount = 0;
+        let wrongCount = 0;
+
+        function getRandomElements(arr, count) {
+            let shuffled = arr.slice().sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        function loadQuiz() {
+            let currentCharacter = quizData[Math.floor(Math.random() * quizData.length)];
+            document.getElementById("character-image").src = `nihillingo/${currentCharacter.image}`;
+            let options = getRandomElements(quizData.filter(q => q.name !== currentCharacter.name), 3);
+            options.push(currentCharacter);
+            options = getRandomElements(options, 4);
+
+            let optionsContainer = document.getElementById("options-container");
+            optionsContainer.innerHTML = "";
+            options.forEach(option => {
+                let button = document.createElement("button");
+                button.className = "option";
+                button.textContent = option.name;
+                button.onclick = () => checkAnswer(button, option.name, currentCharacter.name);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(button, selected, correct) {
+            if (selected === correct) {
+                button.classList.add("correct");
+                document.getElementById("feedback").textContent = "Richtig!";
+                correctCount++;
+                document.getElementById("correct-sound").play();
+            } else {
+                button.classList.add("wrong");
+                document.getElementById("feedback").textContent = "Falsch! Versuche es erneut.";
+                wrongCount++;
+                document.getElementById("wrong-sound").play();
+            }
+            document.getElementById("correct-count").textContent = correctCount;
+            document.getElementById("wrong-count").textContent = wrongCount;
+            setTimeout(() => {
+                button.classList.remove("correct", "wrong");
+                loadQuiz();
+            }, 1000);
+        }
+
+        loadQuiz();
+    </script>
+</body>
+</html>
