@@ -13,41 +13,39 @@
             color: white;
         }
         .header {
-            font-size: 28px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px black;
-            margin-bottom: 20px;
+            margin-bottom: 40px;
+            cursor: pointer;
         }
-        .quiz-container {
-            max-width: 500px;
+        .header img {
+            height: 120px;
+        }
+        .quiz-container, .course-selection {
+            max-width: 1000px;
             margin: auto;
             background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 10px;
+            padding: 50px;
+            border-radius: 12px;
             position: relative;
         }
         .score-container {
-            position: absolute;
-            left: -150px;
-            top: 50%;
-            transform: translateY(-50%);
             text-align: left;
             font-size: 18px;
+            margin-bottom: 10px;
         }
-        .option {
-            display: block;
+        .option, .course-btn {
             margin: 10px;
-            padding: 10px;
+            padding: 20px;
             background-color: rgba(200, 200, 200, 0.3);
             border: none;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 22px;
             color: white;
-            border-radius: 5px;
-            transition: background-color 0.3s;
+            border-radius: 8px;
+            transition: background-color 0.3s, transform 0.2s;
         }
-        .option:hover {
+        .option:hover, .course-btn:hover {
             background-color: rgba(200, 200, 200, 0.5);
+            transform: scale(1.05);
         }
         .correct {
             background-color: green !important;
@@ -55,15 +53,78 @@
         .wrong {
             background-color: red !important;
         }
+        .course-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            justify-items: center;
+        }
+        #options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .flag-image-start {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+        .flag-image-quiz {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            max-width: 100px;
+            height: auto;
+            display: none;
+        }
+        .course-btn-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .course-btn-wrapper button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .course-btn-wrapper button img {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
-    <div class="header">Nihillingo</div>
+    <div class="header" onclick="goToStart()">
+        <img src="spiele/nihillingo.png" alt="Logo">
+    </div>
 
     <audio id="correct-sound" src="nihillingo/correct.mp3" preload="auto"></audio>
     <audio id="wrong-sound" src="nihillingo/wrong.mp3" preload="auto"></audio>
 
-    <div class="quiz-container">
+    <div class="course-selection">
+        <h2>Wähle einen Kurs:</h2>
+        <div class="course-grid">
+            <div class="course-btn-wrapper">
+                <button class="course-btn" onclick="startCourse('italian')">
+                    <img class="flag-image-start" src="nihillingo/Italien.png" alt="Italien Flagge">
+                    Italian Brainrot
+                </button>
+            </div>
+            <div class="course-btn-wrapper">
+                <button class="course-btn" onclick="startCourse('skibidi')">
+                    <img class="flag-image-start" src="nihillingo/skibidi.png" alt="Skibidi Flagge">
+                    Skibidi Toilet
+                </button>
+            </div>
+            <button class="course-btn" onclick="startCourse('kurs3')">???</button>
+            <button class="course-btn" onclick="startCourse('kurs4')">???</button>
+        </div>
+    </div>
+
+    <div class="quiz-container" style="display:none;">
+        <img id="quiz-flag-italian" class="flag-image-quiz" src="nihillingo/Italien.png" alt="Italien Flagge">
+        <img id="quiz-flag-skibidi" class="flag-image-quiz" src="nihillingo/skibidi.png" alt="Skibidi Flagge">
         <div class="score-container">
             <p>Richtig: <span id="correct-count">0</span></p>
             <p>Fehler: <span id="wrong-count">0</span></p>
@@ -75,7 +136,9 @@
     </div>
 
     <script>
-        let quizData = [
+        let quizData = [];
+
+        const italianBrainrot = [
             { name: "Bombardiro Crocodilo", image: "bombardiro.png" },
             { name: "Tralalero Tralala", image: "tralalero.png" },
             { name: "Lirili Larila", image: "lirili.png" },
@@ -95,7 +158,7 @@
             { name: "Frulli Frolla", image: "frulli.png" },
             { name: "Tricki Tracka Tellas", image: "tricki.png" },
             { name: "Cocofanto", image: "cocofanto.png" },
-            { name: "Tripi Tropi", image: "tripitropa.png" },
+            { name: "Tripi Tropa", image: "tripitropa.png" },
             { name: "Giraffa Celeste", image: "giraffa.png" },
             { name: "Bluberini Octopussini", image: "bluberini.png" },
             { name: "Ecco Cavallo Virtuoso", image: "ecco.png" },
@@ -103,8 +166,86 @@
             { name: "Bananitta Dolphinitta", image: "bananitta.png" }
         ];
 
+        const skibidiToilet = [
+            { name: "Berserker Skibidi Mutant", image: "sk1.png" },
+            { name: "Buzzsaw Soldier Skibidi Toilet", image: "sk2.png" },
+            { name: "Buzzsaw Skibidi Mutant", image: "sk3.png" },
+            { name: "Camera Strider", image: "sk4.png" },
+            { name: "Cameraman 1K34", image: "sk5.png" },
+            { name: "Camerawoman 1.0", image: "sk6.png" },
+            { name: "Chief Scientist Skibidi Toilet", image: "sk7.png" },
+            { name: "Cinemaman", image: "sk8.png" },
+            { name: "Dark Speakerman", image: "sk9.png" },
+            { name: "Decoy G-Toilet", image: "sk10.png" },
+            { name: "Detainer Astro Toilet", image: "sk11.png" },
+            { name: "Detective Cameraman", image: "sk12.png" },
+            { name: "DJ Skibidi Toilet", image: "sk13.png" },
+            { name: "Duchess Astro Toilet", image: "sk14.png" },
+            { name: "Energized TV Man", image: "sk15.png" },
+            { name: "Female Officer", image: "sk16.png" },
+            { name: "Female Skibidi Mutant", image: "sk17.png" },
+            { name: "Fred", image: "sk18.png" },
+            { name: "G-Toilet", image: "sk19.png" },
+            { name: "Gray Speakerman", image: "sk20.png" },
+            { name: "Heavy Large Cameraman", image: "sk21.png" },
+            { name: "Isaac Kleiner Skibidi Toilet", image: "sk22.png" },
+            { name: "Juggernaut Astro Toilet", image: "sk23.png" },
+            { name: "Blue Shirted Large Cameraman", image: "sk24.png" },
+            { name: "Large TV Man", image: "sk25.png" },
+            { name: "Larry", image: "sk26.png" },
+            { name: "Lucky Cameraman", image: "sk27.png" },
+            { name: "Floral Tied Medic Cameraman", image: "sk28.png" },
+            { name: "Michael Jackson Skibidi Toilet", image: "sk29.png" },
+            { name: "Mothership Astro Toilet", image: "sk30.png" },
+            { name: "Overseer Astro Toilet", image: "sk31.png" },
+            { name: "Plungerman", image: "sk32.png" },
+            { name: "Plungerwoman", image: "sk33.png" },
+            { name: "Quad-Laser Chief Scientist Skibidi Toilet Mech", image: "sk34.png" },
+            { name: "Scientist Cameraman 1337", image: "sk35.png" },
+            { name: "Scientist TV Man", image: "sk36.png" },
+            { name: "Senior Scientist Cameraman", image: "sk37.png" },
+            { name: "Sergeant Cameraman", image: "sk38.png" },
+            { name: "Sightbender Agent", image: "sk39.png" },
+            { name: "Simp Cameraman", image: "sk40.png" },
+            { name: "Sniper Cameraman", image: "sk41.png" },
+            { name: "Speakerwoman", image: "sk42.png" },
+            { name: "Striped Tied Scientist Cameraman", image: "sk43.png" },
+            { name: "SWAT Skibidi Mutant", image: "sk44.png" },
+            { name: "The Administrator", image: "sk45.png" },
+            { name: "Titan Cameraman", image: "sk46.png" },
+            { name: "Titan Speakerman", image: "sk47.png" },
+            { name: "Titan TV Man", image: "sk48.png" },
+            { name: "TV Woman", image: "sk49.png" },
+            { name: "Twin Green Suited Cameramen", image: "sk50.png" },
+            { name: "Watchman of Doom", image: "sk51.png" }
+        ];
+
         let correctCount = 0;
         let wrongCount = 0;
+
+        function startCourse(courseName) {
+            document.getElementById("quiz-flag-italian").style.display = "none";
+            document.getElementById("quiz-flag-skibidi").style.display = "none";
+
+            if (courseName === 'italian') {
+                quizData = italianBrainrot;
+                document.getElementById("quiz-flag-italian").style.display = "block";
+            } else if (courseName === 'skibidi') {
+                quizData = skibidiToilet;
+                document.getElementById("quiz-flag-skibidi").style.display = "block";
+            } else {
+                alert('Dieser Kurs ist noch nicht verfügbar.');
+                return;
+            }
+
+            document.querySelector('.course-selection').style.display = 'none';
+            document.querySelector('.quiz-container').style.display = 'block';
+            correctCount = 0;
+            wrongCount = 0;
+            document.getElementById("correct-count").textContent = correctCount;
+            document.getElementById("wrong-count").textContent = wrongCount;
+            loadQuiz();
+        }
 
         function getRandomElements(arr, count) {
             let shuffled = arr.slice().sort(() => 0.5 - Math.random());
@@ -149,7 +290,11 @@
             }, 1000);
         }
 
-        loadQuiz();
+        function goToStart() {
+            document.querySelector('.course-selection').style.display = 'block';
+            document.querySelector('.quiz-container').style.display = 'none';
+            document.getElementById("feedback").textContent = "";
+        }
     </script>
 </body>
 </html>
