@@ -1,108 +1,188 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
+  <meta charset="UTF-8" />
   <title>T-Tris</title>
-  <meta charset="UTF-8">
   <style>
-  html, body {
-    height: 100%;
-    margin: 0;
-  }
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
 
-  body {
-    background: black;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    color: white;
-    font-family: Arial, sans-serif;
-  }
+    body {
+      background: black;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      color: white;
+      font-family: Arial, sans-serif;
+      position: relative;
+    }
 
-  header {
-    color: white;
-    font-size: 3.5em; /* Größeres Logo */
-    font-weight: bold;
-    margin: 20px 0;
-    text-align: center;
-  }
+    #menu-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      background: black;
+    }
 
-  .menu-container, .game-container, .skins-container, .game-over-container {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-  }
+    #logo-header {
+      position: relative;
+      font-size: 5em;
+      font-weight: bold;
+      margin: 40px 0;
+      text-align: center;
+      z-index: 1;
+      padding: 20px 60px;
+      animation: colorShift 8s linear infinite;
+    }
 
-  .menu-container.active, .game-container.active, .skins-container.active, .game-over-container.active {
-    display: flex;
-  }
+    #logo-header::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      background: linear-gradient(
+        45deg,
+        cyan,
+        blue,
+        orange,
+        yellow,
+        green,
+        red,
+        purple,
+        cyan
+      );
+      background-size: 400% 400%;
+      animation: borderFlow 6s linear infinite;
+      z-index: -1;
+      border-radius: 20px;
+      filter: brightness(1.2) blur(2px);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      -webkit-mask-composite: destination-out;
+      padding: 10px;
+    }
 
-  .game-container {
-    flex-direction: row;
-    gap: 20px;
-    margin-top: 20px; /* Abstand zwischen Logo und Spielfeld */
-  }
+    @keyframes borderFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-  canvas {
-    border: 1px solid white;
-  }
+    @keyframes colorShift {
+      0% { color: cyan; }
+      14% { color: blue; }
+      28% { color: orange; }
+      42% { color: yellow; }
+      57% { color: green; }
+      71% { color: red; }
+      85% { color: purple; }
+      100% { color: cyan; }
+    }
 
-  .stats {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-items: flex-start;
-  }
+    .menu-container, .game-container, .skins-container, .game-over-container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      z-index: 1;
+    }
 
-  .stat-box, .controls {
-    border: 1px solid white;
-    padding: 10px;
-    border-radius: 5px;
-    width: 200px;
-  }
+    .menu-container.active, .game-container.active, .skins-container.active, .game-over-container.active {
+      display: flex;
+    }
 
-  .stat-box h2, .controls h2 {
-    margin: 0 0 10px 0;
-    font-size: 1.2em;
-  }
+    .game-container {
+      flex-direction: row;
+      gap: 20px;
+      margin-top: 20px;
+    }
 
-  .controls ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    font-size: 0.9em;
-  }
+    canvas#game {
+      border: 1px solid white;
+      z-index: 1;
+    }
 
-  .controls li {
-    margin-bottom: 5px;
-  }
+    .stats {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: flex-start;
+    }
 
-  button {
-    background: #6200ea;
-    color: white;
-    border: none;
-    padding: 15px 30px;
-    font-size: 1.2em;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-  }
+    .stat-box, .controls {
+      border: 1px solid white;
+      padding: 10px;
+      border-radius: 5px;
+      width: 200px;
+    }
 
-  button:hover {
-    background: #7c43bd;
-    transform: scale(1.05);
-  }
+    .stat-box h2, .controls h2 {
+      margin: 0 0 10px 0;
+      font-size: 1.4em;
+    }
 
-  .game-over-container h1 {
-    font-size: 2em;
-    color: red;
-  }
+    .controls ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-size: 1em;
+    }
+
+    .controls li {
+      margin-bottom: 5px;
+    }
+
+    button {
+      background: #6200ea;
+      color: white;
+      border: none;
+      padding: 20px 40px;
+      font-size: 1.6em;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+      z-index: 1;
+    }
+
+    button:hover {
+      background: #7c43bd;
+      transform: scale(1.05);
+    }
+
+    .touch-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .touch-buttons button {
+      padding: 16px 25px;
+      font-size: 2em;
+    }
+
+    .game-over-container h1 {
+      font-size: 2em;
+      color: red;
+    }
   </style>
 </head>
 <body>
-<header>T-Tris</header>
+<canvas id="menu-bg"></canvas>
+
+<header id="logo-header">T-Tris</header>
 
 <div class="menu-container active" id="menu">
   <button id="play-button">Spielen</button>
@@ -115,7 +195,18 @@
 </div>
 
 <div class="game-container" id="game-container">
+  <div class="touch-buttons">
+    <button onclick="moveLeft()">←</button>
+    <button onclick="rotate()">⟳</button>
+  </div>
+
   <canvas width="384" height="768" id="game"></canvas>
+
+  <div class="touch-buttons">
+    <button onclick="moveRight()">→</button>
+    <button onclick="moveDown()">↓</button>
+  </div>
+
   <div class="stats">
     <div class="stat-box">
       <h2>Punkte</h2>
@@ -128,11 +219,10 @@
     <div class="controls">
       <h2>Steuerung</h2>
       <ul>
-        <li>Pfeil links: Bewegen nach links</li>
-        <li>Pfeil rechts: Bewegen nach rechts</li>
-        <li>Pfeil nach oben: Rotieren</li>
-        <li>Pfeil nach unten: Schneller fallen</li>
-        <li>Leertaste: Sofort fallen</li>
+        <li>Links/A: nach links</li>
+        <li>Rechts/D: nach rechts</li>
+        <li>Oben/W: rotieren</li>
+        <li>Unten/S oder Leertaste: sofort fallen</li>
       </ul>
     </div>
   </div>
@@ -144,18 +234,21 @@
 </div>
 
 <script>
+// Variablen & Setup
+const canvas = document.getElementById('game');
+const context = canvas.getContext('2d');
+const pointsDisplay = document.getElementById('points');
+const blocksDisplay = document.getElementById('blocks');
 const menu = document.getElementById('menu');
-const skins = document.getElementById('skins');
 const gameContainer = document.getElementById('game-container');
+const skins = document.getElementById('skins');
 const gameOverContainer = document.getElementById('game-over');
 const playButton = document.getElementById('play-button');
 const skinsButton = document.getElementById('skins-button');
 const backToMenuButton = document.getElementById('back-to-menu');
 const restartButton = document.getElementById('restart-button');
-const canvas = document.getElementById('game');
-const context = canvas.getContext('2d');
-const pointsDisplay = document.getElementById('points');
-const blocksDisplay = document.getElementById('blocks');
+const menuBgCanvas = document.getElementById('menu-bg');
+const menuBgCtx = menuBgCanvas.getContext('2d');
 
 const cols = 12;
 const rows = 24;
@@ -169,27 +262,14 @@ let rAF = null;
 let count = 0;
 let gameOver = false;
 
-// Spielfeld initialisieren
-function resetPlayfield() {
-  playfield = [];
-  for (let row = -2; row < rows; row++) {
-    playfield[row] = [];
-    for (let col = 0; col < cols; col++) {
-      playfield[row][col] = 0;
-    }
-  }
-}
-resetPlayfield();
-
-// Tetrominos und Farben
 const tetrominos = {
-  'I': [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
-  'J': [[1, 0, 0], [1, 1, 1], [0, 0, 0]],
-  'L': [[0, 0, 1], [1, 1, 1], [0, 0, 0]],
-  'O': [[1, 1], [1, 1]],
-  'S': [[0, 1, 1], [1, 1, 0], [0, 0, 0]],
-  'Z': [[1, 1, 0], [0, 1, 1], [0, 0, 0]],
-  'T': [[0, 1, 0], [1, 1, 1], [0, 0, 0]],
+  'I': [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]],
+  'J': [[1,0,0],[1,1,1],[0,0,0]],
+  'L': [[0,0,1],[1,1,1],[0,0,0]],
+  'O': [[1,1],[1,1]],
+  'S': [[0,1,1],[1,1,0],[0,0,0]],
+  'Z': [[1,1,0],[0,1,1],[0,0,0]],
+  'T': [[0,1,0],[1,1,1],[0,0,0]],
 };
 
 const colors = {
@@ -202,15 +282,20 @@ const colors = {
   'T': 'purple',
 };
 
-// Tetromino-Sequenz
+// Spiellogik
+function resetPlayfield() {
+  playfield = [];
+  for (let row = -2; row < rows; row++) {
+    playfield[row] = Array(cols).fill(0);
+  }
+}
 function generateSequence() {
-  const sequence = ['I', 'J', 'L', 'O', 'S', 'Z', 'T'];
+  const sequence = Object.keys(tetrominos);
   while (sequence.length) {
     const rand = Math.floor(Math.random() * sequence.length);
     tetrominoSequence.push(sequence.splice(rand, 1)[0]);
   }
 }
-
 function getNextTetromino() {
   if (tetrominoSequence.length === 0) generateSequence();
   const name = tetrominoSequence.pop();
@@ -222,8 +307,28 @@ function getNextTetromino() {
     col: Math.floor(cols / 2) - Math.ceil(matrix[0].length / 2),
   };
 }
-
-// Spiel-Logik
+function isValidMove(matrix, row, col) {
+  return matrix.every((r, i) =>
+    r.every((cell, j) => {
+      if (!cell) return true;
+      const x = col + j;
+      const y = row + i;
+      return x >= 0 && x < cols && y < rows && !playfield[y]?.[x];
+    })
+  );
+}
+function placeTetromino() {
+  tetromino.matrix.forEach((row, i) => {
+    row.forEach((cell, j) => {
+      if (cell) playfield[tetromino.row + i][tetromino.col + j] = tetromino.name;
+    });
+  });
+  blocks++;
+  blocksDisplay.textContent = blocks;
+  clearLines();
+  tetromino = getNextTetromino();
+  if (!isValidMove(tetromino.matrix, tetromino.row, tetromino.col)) showGameOver();
+}
 function clearLines() {
   for (let row = rows - 1; row >= 0; row--) {
     if (playfield[row].every(cell => !!cell)) {
@@ -237,53 +342,15 @@ function clearLines() {
     }
   }
 }
-
-function placeTetromino() {
-  tetromino.matrix.forEach((row, i) => {
-    row.forEach((cell, j) => {
-      if (cell) playfield[tetromino.row + i][tetromino.col + j] = tetromino.name;
-    });
-  });
-  blocks++;
-  blocksDisplay.textContent = blocks;
-  clearLines();
-  tetromino = getNextTetromino();
-  if (!isValidMove(tetromino.matrix, tetromino.row, tetromino.col)) showGameOver();
-}
-
-function isValidMove(matrix, row, col) {
-  return matrix.every((r, i) =>
-    r.every((cell, j) => {
-      if (!cell) return true;
-      const x = col + j;
-      const y = row + i;
-      return x >= 0 && x < cols && y < rows && !playfield[y]?.[x];
-    })
-  );
-}
-
 function showGameOver() {
   gameOver = true;
   cancelAnimationFrame(rAF);
   gameContainer.classList.remove('active');
   gameOverContainer.classList.add('active');
 }
-
-// Spiel starten
-function startGame() {
-  points = 0;
-  blocks = 0;
-  gameOver = false;
-  pointsDisplay.textContent = points;
-  blocksDisplay.textContent = blocks;
-  resetPlayfield();
-  tetrominoSequence = [];
-  tetromino = getNextTetromino();
-  generateSequence();
-  loop();
+function rotateMatrix(matrix) {
+  return matrix[0].map((_, i) => matrix.map(row => row[i]).reverse());
 }
-
-// Render-Logik
 function drawGrid() {
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
@@ -296,7 +363,6 @@ function drawGrid() {
     }
   }
 }
-
 function drawTetromino() {
   tetromino.matrix.forEach((row, i) =>
     row.forEach((cell, j) => {
@@ -307,8 +373,6 @@ function drawTetromino() {
     })
   );
 }
-
-// Loop
 function loop() {
   rAF = requestAnimationFrame(loop);
   context.clearRect(0, 0, canvas.width, canvas.height);
@@ -323,59 +387,121 @@ function loop() {
     }
   }
 }
+function startGame() {
+  points = 0;
+  blocks = 0;
+  gameOver = false;
+  pointsDisplay.textContent = points;
+  blocksDisplay.textContent = blocks;
+  resetPlayfield();
+  tetrominoSequence = [];
+  tetromino = getNextTetromino();
+  generateSequence();
+  loop();
+}
 
 // Steuerung
-document.addEventListener('keydown', (event) => {
+document.addEventListener('keydown', (e) => {
   if (gameOver) return;
+  const k = e.key.toLowerCase();
   const { row, col, matrix } = tetromino;
-  if (event.key === 'ArrowLeft') {
+  if (k === 'arrowleft' || k === 'a') {
     if (isValidMove(matrix, row, col - 1)) tetromino.col--;
-  } else if (event.key === 'ArrowRight') {
+  } else if (k === 'arrowright' || k === 'd') {
     if (isValidMove(matrix, row, col + 1)) tetromino.col++;
-  } else if (event.key === 'ArrowDown') {
-    if (isValidMove(matrix, row + 1, col)) tetromino.row++;
-  } else if (event.key === 'ArrowUp') {
-    const rotated = rotate(matrix);
+  } else if (k === 'arrowup' || k === 'w') {
+    const rotated = rotateMatrix(matrix);
     if (isValidMove(rotated, row, col)) tetromino.matrix = rotated;
-  } else if (event.key === ' ') {
+  } else if (k === 'arrowdown' || k === 's' || k === ' ') {
     while (isValidMove(matrix, tetromino.row + 1, col)) tetromino.row++;
     placeTetromino();
   }
 });
-
-// Rotieren
-function rotate(matrix) {
-  const N = matrix.length;
-  const result = Array.from({ length: N }, () => Array(N).fill(0));
-  for (let i = 0; i < N; i++) {
-    for (let j = 0; j < N; j++) {
-      result[j][N - i - 1] = matrix[i][j];
-    }
+function moveLeft() {
+  if (!gameOver && isValidMove(tetromino.matrix, tetromino.row, tetromino.col - 1)) tetromino.col--;
+}
+function moveRight() {
+  if (!gameOver && isValidMove(tetromino.matrix, tetromino.row, tetromino.col + 1)) tetromino.col++;
+}
+function moveDown() {
+  if (!gameOver) {
+    while (isValidMove(tetromino.matrix, tetromino.row + 1, tetromino.col)) tetromino.row++;
+    placeTetromino();
   }
-  return result;
+}
+function rotate() {
+  if (!gameOver) {
+    const rotated = rotateMatrix(tetromino.matrix);
+    if (isValidMove(rotated, tetromino.row, tetromino.col)) tetromino.matrix = rotated;
+  }
 }
 
-// Button-Events
+// Buttons
 playButton.addEventListener('click', () => {
   menu.classList.remove('active');
   gameContainer.classList.add('active');
+  menuBgCanvas.style.display = 'none';
   startGame();
 });
-
-skinsButton.addEventListener('click', () => {
-  menu.classList.remove('active');
-  skins.classList.add('active');
-});
-
-backToMenuButton.addEventListener('click', () => {
-  skins.classList.remove('active');
-  menu.classList.add('active');
-});
-
-restartButton.addEventListener('click', () => {
+skinsButton.onclick = () => { menu.classList.remove('active'); skins.classList.add('active'); };
+backToMenuButton.onclick = () => { skins.classList.remove('active'); menu.classList.add('active'); };
+restartButton.onclick = () => {
   gameOverContainer.classList.remove('active');
   menu.classList.add('active');
-});
+  menuBgCanvas.style.display = 'block'; // Hintergrund wieder anzeigen
+};
+
+
+// Menü-Hintergrundanimation
+menuBgCanvas.width = menuBgCanvas.offsetWidth;
+menuBgCanvas.height = menuBgCanvas.offsetHeight;
+const bgGrid = 24;
+const bgCols = Math.floor(menuBgCanvas.width / bgGrid);
+const bgRows = Math.floor(menuBgCanvas.height / bgGrid);
+const fallingShapes = [];
+function createFallingShape() {
+  const keys = Object.keys(tetrominos);
+  const name = keys[Math.floor(Math.random() * keys.length)];
+  const matrix = tetrominos[name];
+  const shape = {
+    name,
+    matrix,
+    col: Math.floor(Math.random() * (bgCols - matrix[0].length)),
+    row: -matrix.length,
+    speed: 0.1 + Math.random() * 0.5,
+    color: colors[name],
+  };
+  fallingShapes.push(shape);
+}
+function drawMenuBg() {
+  menuBgCtx.clearRect(0, 0, menuBgCanvas.width, menuBgCanvas.height);
+  fallingShapes.forEach(shape => {
+    shape.row += shape.speed;
+    shape.matrix.forEach((row, i) => {
+      row.forEach((cell, j) => {
+        if (cell) {
+          menuBgCtx.fillStyle = shape.color;
+          menuBgCtx.globalAlpha = 0.3;
+          menuBgCtx.fillRect((shape.col + j) * bgGrid, (shape.row + i) * bgGrid, bgGrid - 1, bgGrid - 1);
+          menuBgCtx.globalAlpha = 1;
+        }
+      });
+    });
+  });
+  for (let i = fallingShapes.length - 1; i >= 0; i--) {
+    if ((fallingShapes[i].row + fallingShapes[i].matrix.length) * bgGrid > menuBgCanvas.height) {
+      fallingShapes.splice(i, 1);
+    }
+  }
+  requestAnimationFrame(drawMenuBg);
+}
+setInterval(() => {
+  if (menu.classList.contains('active')) {
+    createFallingShape();
+    if (Math.random() < 0.5) createFallingShape();
+  }
+}, 300);
+drawMenuBg();
 </script>
 </body>
 </html>
