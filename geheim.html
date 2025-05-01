@@ -1,201 +1,211 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nachricht Verschlüsseln</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: #e0e0e0;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nachricht Verschlüsseln</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
 
-        .container {
-            max-width: 600px;
-            width: 100%;
-            background: #1e1e1e;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
+    .container {
+      max-width: 600px;
+      width: 100%;
+      background: #1e1e1e;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
 
-        h1 {
-            text-align: center;
-            color: #6200ea;
-        }
+    h1 {
+      text-align: center;
+      color: #6200ea;
+    }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 1.1em;
-        }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1.1em;
+    }
 
-        textarea, input, select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            font-size: 1em;
-            border-radius: 5px;
-            border: none;
-            background: #333;
-            color: #e0e0e0;
-        }
+    textarea, input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      font-size: 1em;
+      border-radius: 5px;
+      border: none;
+      background: #333;
+      color: #e0e0e0;
+    }
 
-        button {
-            background-color: #6200ea;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.2s;
-        }
+    button {
+      background-color: #6200ea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background-color 0.2s;
+    }
 
-        button:hover {
-            background-color: #7c43bd;
-        }
+    button:hover {
+      background-color: #7c43bd;
+    }
 
-        .result {
-            font-size: 1.2em;
-            margin-top: 20px;
-            text-align: center;
-        }
+    .result {
+      font-size: 1.2em;
+      margin-top: 20px;
+      text-align: center;
+    }
 
-    </style>
+    .select-group {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+    }
+
+    .select-group > div {
+      flex: 1;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Nachricht Verschlüsseln</h1>
-        <label for="input-text">Nachricht eingeben:</label>
-        <textarea id="input-text" rows="4" placeholder="Geben Sie Ihre Nachricht ein..."></textarea>
+  <div class="container">
+    <h1>Nachricht Verschlüsseln</h1>
 
-        <label for="conversion-type">Verschlüsselungsart:</label>
-        <select id="conversion-type">
-            <option value="toBinary">Text zu Binär</option>
-            <option value="fromBinary">Binär zu Text</option>
-            <option value="toHex">Text zu Hexadezimal</option>
-            <option value="fromHex">Hexadezimal zu Text</option>
-            <option value="toTCode">Text zu T-Code</option>
-            <option value="fromTCode">T-Code zu Text</option>
-            <option value="toBase64">Text zu Base64</option>
-            <option value="fromBase64">Base64 zu Text</option>
-            <option value="toMorse">Text zu Morsecode</option>
-            <option value="fromMorse">Morsecode zu Text</option>
+    <label for="input-text">Nachricht eingeben:</label>
+    <textarea id="input-text" rows="4" placeholder="Geben Sie Ihre Nachricht ein..."></textarea>
+
+    <div class="select-group">
+      <div>
+        <label for="from-format">Von:</label>
+        <select id="from-format">
+          <option value="Text">Text</option>
+          <option value="Binary">Binär</option>
+          <option value="Hex">Hexadezimal</option>
+          <option value="TCode">T-Code</option>
+          <option value="Base64">Base64</option>
+          <option value="Morse">Morsecode</option>
         </select>
-
-        <button onclick="convertMessage()">Nachricht Konvertieren</button>
-
-        <div id="result" class="result"></div>
+      </div>
+      <div>
+        <label for="to-format">Nach:</label>
+        <select id="to-format">
+          <option value="Binary">Binär</option>
+          <option value="Hex">Hexadezimal</option>
+          <option value="TCode">T-Code</option>
+          <option value="Base64">Base64</option>
+          <option value="Morse">Morsecode</option>
+          <option value="Text">Text</option>
+        </select>
+      </div>
     </div>
 
-    <script>
-        function textToBinary(text) {
-            return text.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
-        }
+    <button onclick="convertMessage()">Nachricht Konvertieren</button>
 
-        function binaryToText(binary) {
-            return binary.split(' ').map(bin => String.fromCharCode(parseInt(bin, 2))).join('');
-        }
+    <div id="result" class="result"></div>
+  </div>
 
-        function textToHex(text) {
-            return text.split('').map(char => char.charCodeAt(0).toString(16).padStart(2, '0')).join(' ');
-        }
+  <script>
+    function textToBinary(text) {
+      return text.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
+    }
 
-        function hexToText(hex) {
-            return hex.split(' ').map(h => String.fromCharCode(parseInt(h, 16))).join('');
-        }
+    function binaryToText(binary) {
+      return binary.split(' ').map(bin => String.fromCharCode(parseInt(bin, 2))).join('');
+    }
 
-        const tCodeMap = {
-            'a': 'm', 'b': 'n', 'c': 'o', 'd': 'p', 'e': 'q',
-            'f': 'r', 'g': 's', 'h': 't', 'i': 'u', 'j': 'v',
-            'k': 'w', 'l': 'x', 'm': 'y', 'n': 'z', 'o': 'a',
-            'p': 'b', 'q': 'c', 'r': 'd', 's': 'e', 't': 'f',
-            'u': 'g', 'v': 'h', 'w': 'i', 'x': 'j', 'y': 'k', 'z': 'l'
-        };
+    function textToHex(text) {
+      return text.split('').map(char => char.charCodeAt(0).toString(16).padStart(2, '0')).join(' ');
+    }
 
-        const reverseTCodeMap = Object.fromEntries(Object.entries(tCodeMap).map(([key, value]) => [value, key]));
+    function hexToText(hex) {
+      return hex.split(' ').map(h => String.fromCharCode(parseInt(h, 16))).join('');
+    }
 
-        function textToTCode(text) {
-            return text.split('').map(char => tCodeMap[char.toLowerCase()] || char).join('');
-        }
+    const tCodeMap = {
+      'a': 'm', 'b': 'n', 'c': 'o', 'd': 'p', 'e': 'q',
+      'f': 'r', 'g': 's', 'h': 't', 'i': 'u', 'j': 'v',
+      'k': 'w', 'l': 'x', 'm': 'y', 'n': 'z', 'o': 'a',
+      'p': 'b', 'q': 'c', 'r': 'd', 's': 'e', 't': 'f',
+      'u': 'g', 'v': 'h', 'w': 'i', 'x': 'j', 'y': 'k', 'z': 'l'
+    };
+    const reverseTCodeMap = Object.fromEntries(Object.entries(tCodeMap).map(([k, v]) => [v, k]));
 
-        function tCodeToText(tCode) {
-            return tCode.split('').map(char => reverseTCodeMap[char.toLowerCase()] || char).join('');
-        }
+    function textToTCode(text) {
+      return text.split('').map(c => tCodeMap[c.toLowerCase()] || c).join('');
+    }
 
-        function textToBase64(text) {
-            return btoa(text);
-        }
+    function tCodeToText(text) {
+      return text.split('').map(c => reverseTCodeMap[c.toLowerCase()] || c).join('');
+    }
 
-        function base64ToText(base64) {
-            try {
-                return atob(base64);
-            } catch (e) {
-                return 'Ungültige Base64-Eingabe';
-            }
-        }
+    function textToBase64(text) {
+      return btoa(text);
+    }
 
-        const morseCodeMap = {
-            'a': '.-', 'b': '-...', 'c': '-.-.', 'd': '-..', 'e': '.',
-            'f': '..-.', 'g': '--.', 'h': '....', 'i': '..', 'j': '.---',
-            'k': '-.-', 'l': '.-..', 'm': '--', 'n': '-.', 'o': '---',
-            'p': '.--.', 'q': '--.-', 'r': '.-.', 's': '...', 't': '-',
-            'u': '..-', 'v': '...-', 'w': '.--', 'x': '-..-', 'y': '-.--', 'z': '--..',
-            '1': '.----', '2': '..---', '3': '...--', '4': '....-', '5': '.....',
-            '6': '-....', '7': '--...', '8': '---..', '9': '----.', '0': '-----',
-            ' ': '/'
-        };
+    function base64ToText(b64) {
+      try { return atob(b64); } catch { return 'Ungültige Base64-Eingabe'; }
+    }
 
-        const reverseMorseCodeMap = Object.fromEntries(Object.entries(morseCodeMap).map(([key, value]) => [value, key]));
+    const morseMap = {
+      'a': '.-', 'b': '-...', 'c': '-.-.', 'd': '-..', 'e': '.',
+      'f': '..-.', 'g': '--.', 'h': '....', 'i': '..', 'j': '.---',
+      'k': '-.-', 'l': '.-..', 'm': '--', 'n': '-.', 'o': '---',
+      'p': '.--.', 'q': '--.-', 'r': '.-.', 's': '...', 't': '-',
+      'u': '..-', 'v': '...-', 'w': '.--', 'x': '-..-', 'y': '-.--', 'z': '--..',
+      '1': '.----', '2': '..---', '3': '...--', '4': '....-', '5': '.....',
+      '6': '-....', '7': '--...', '8': '---..', '9': '----.', '0': '-----',
+      ' ': '/'
+    };
+    const reverseMorseMap = Object.fromEntries(Object.entries(morseMap).map(([k, v]) => [v, k]));
 
-        function textToMorse(text) {
-            return text.toLowerCase().split('').map(char => morseCodeMap[char] || char).join(' ');
-        }
+    function textToMorse(text) {
+      return text.toLowerCase().split('').map(c => morseMap[c] || c).join(' ');
+    }
 
-        function morseToText(morse) {
-            return morse.split(' ').map(code => reverseMorseCodeMap[code] || '?').join('');
-        }
+    function morseToText(morse) {
+      return morse.split(' ').map(code => reverseMorseMap[code] || '?').join('');
+    }
 
-        function convertMessage() {
-            const inputText = document.getElementById('input-text').value.trim();
-            const conversionType = document.getElementById('conversion-type').value;
-            const resultDiv = document.getElementById('result');
+    function convertMessage() {
+      const input = document.getElementById('input-text').value.trim();
+      const from = document.getElementById('from-format').value;
+      const to = document.getElementById('to-format').value;
+      const resultDiv = document.getElementById('result');
+      let intermediate = input;
+      let result = '';
 
-            let result = '';
+      // decode to text
+      if (from === 'Text') intermediate = input;
+      else if (from === 'Binary') intermediate = binaryToText(input);
+      else if (from === 'Hex') intermediate = hexToText(input);
+      else if (from === 'TCode') intermediate = tCodeToText(input);
+      else if (from === 'Base64') intermediate = base64ToText(input);
+      else if (from === 'Morse') intermediate = morseToText(input);
 
-            if (conversionType === 'toBinary') {
-                result = textToBinary(inputText);
-            } else if (conversionType === 'toHex') {
-                result = textToHex(inputText);
-            } else if (conversionType === 'fromBinary') {
-                result = binaryToText(inputText);
-            } else if (conversionType === 'fromHex') {
-                result = hexToText(inputText);
-            } else if (conversionType === 'toTCode') {
-                result = textToTCode(inputText);
-            } else if (conversionType === 'fromTCode') {
-                result = tCodeToText(inputText);
-            } else if (conversionType === 'toBase64') {
-                result = textToBase64(inputText);
-            } else if (conversionType === 'fromBase64') {
-                result = base64ToText(inputText);
-            } else if (conversionType === 'toMorse') {
-                result = textToMorse(inputText);
-            } else if (conversionType === 'fromMorse') {
-                result = morseToText(inputText);
-            }
+      // encode from text
+      if (to === 'Text') result = intermediate;
+      else if (to === 'Binary') result = textToBinary(intermediate);
+      else if (to === 'Hex') result = textToHex(intermediate);
+      else if (to === 'TCode') result = textToTCode(intermediate);
+      else if (to === 'Base64') result = textToBase64(intermediate);
+      else if (to === 'Morse') result = textToMorse(intermediate);
 
-            resultDiv.textContent = result ? `Ergebnis: ${result}` : 'Bitte geben Sie eine gültige Eingabe ein.';
-        }
-    </script>
+      resultDiv.textContent = result ? `Ergebnis: ${result}` : 'Bitte gültige Eingabe wählen.';
+    }
+  </script>
 </body>
 </html>
