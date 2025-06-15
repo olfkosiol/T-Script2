@@ -1,0 +1,320 @@
+import tkinter as tk
+from tkinter import ttk
+from collections import Counter
+from itertools import combinations
+import random
+
+RANKS = ['?'] + list('23456789TJQKA')
+SUITS = ['?'] + ['h', 'd', 'c', 's']
+RANK_MAPPING = {r: i + 2 for i, r in enumerate('23456789TJQKA')}
+
+POKER_HAND_ORDER = [
+    "High Card",
+    "One Pair",
+    "Two Pair",
+    "Three of a Kind",
+    "Straight",
+    "Flush",
+    "Full House",
+    "Four of a Kind",
+    "Straight Flush"
+]
+
+def evaluate_hand(cards):
+    if len(cards) < 5:
+        return simple_evaluate(cards)
+
+    best = "High Card"
+    for combo in combinations(cards, 5):
+        result = simple_evaluate(combo)
+        if POKER_HAND_ORDER.index(result) > POKER_HAND_ORDER.index(best):
+            best = result
+    return best
+
+def simple_evaluate(cards):
+    ranks = sorted([RANK_MAPPING[c[0]] for c in cards], reverse=True)
+    suits = [c[1] for c in cards]
+    rank_counts = Counter(ranks)
+    suit_counts = Counter(suits)
+
+    is_flush = max(suit_counts.values()) >= 5
+    is_straight = False
+    unique_ranks = sorted(set(ranks))
+    for i in range(len(unique_ranks) - 4):
+        if unique_ranks[i + 4] - unique_ranks[i] == 4:
+            is_straight = True
+
+    values = sorted(rank_counts.values(), reverse=True)
+
+    if is_flush and is_straight:
+        return "Straight Flush"
+    elif 4 in values:
+        return "Four of a Kind"
+    elif 3 in values and 2 in values:
+        return "Full House"
+    elif is_flush:
+        return "Flush"
+    elif is_straight:
+        return "Straight"
+    elif 3 in values:
+        return "Three of a Kind"
+    elif values.count(2) == 2:
+        return "Two Pair"
+    elif 2 in values:
+        return "One Pair"
+    else:
+        return "High Card"
+
+def get_best_hand(known_cards):
+    if not known_cards:
+        return "High Card"
+    best = "High Card"
+    for r in range(2, min(len(known_cards), 7) + 1):
+        for combo in combinations(known_cards, r):
+            hand = evaluate_hand(list(combo))
+            if POKER_HAND_ORDER.index(hand) > POKER_HAND_ORDER.index(best):
+                best = hand
+    return best
+
+def calculate_flush_probability(known_cards, simulations=4000):
+    if not known_cards:
+        return 0.0
+    suit_counts = Counter(s for _, s in known_cards)
+    max_suit = max(suit_counts, key=lambda k: suit_counts[k])
+    needed = 5 - suit_counts[max_suit]
+    if needed <= 0:
+        return 100.0
+    full_deck = [(r, s) for r in '23456789TJQKA' for s in 'hdcs']
+    remaining = [c for c in full_deck if c not in known_cards]
+    flush_hits = 0
+    for _ in range(simulations):
+        drawn = random.sample(remaining, 7 - len(known_cards))
+        all_cards = known_cards + drawn
+        suits = Counter(s for _, s in all_cards)
+        if suits[max_suit] >= 5:
+            flush_hits += 1
+    return round((flush_hits / simulations) * 100, 2)
+
+def calculate_full_house_probability(known_cards, simulations=4000):
+    if not known_cards:
+        return 0.0
+    full_deck = [(r, s) for r in '23456789TJQKA' for s in 'hdcs']
+    remaining = [c for c in full_deck if c not in known_cards]
+    hits = 0
+    for _ in range(simulations):
+        drawn = random.sample(remaining, 7 - len(known_cards))
+        all_cards = known_cards + drawn
+        ranks = [c[0] for c in all_cards]
+        rank_counts = Counter(ranks).values()
+        if 3 in rank_counts and 2 in rank_counts:
+            hits += 1
+        elif list(rank_counts).count(3) >= 2:
+            hits += 1
+    return round((hits / simulations) * 100, 2)
+
+def calculate_straight_probability(known_cards, simulations=4000):
+    if not known_cards:
+        return 0.0
+    def has_straight(cards):
+        ranks = set(RANK_MAPPING[r] for r, _ in cards)
+        if 14 in ranks:
+            ranks.add(1)
+        sorted_ranks = sorted(ranks)
+        for i in range(len(sorted_ranks) - 4):
+            if sorted_ranks[i + 4] - sorted_ranks[i] == 4 and all(
+                sorted_ranks[i + j] - sorted_ranks[i] == j for j in range(5)
+            ):
+                return True
+        return False
+    full_deck = [(r, s) for r in '23456789TJQKA' for s in 'hdcs']
+    remaining = [c for c in full_deck if c not in known_cards]
+    hits = 0
+    for _ in range(simulations):
+        drawn = random.sample(remaining, 7 - len(known_cards))
+        all_cards = known_cards + drawn
+        if has_straight(all_cards):
+            hits += 1
+    return round((hits / simulations) * 100, 2)
+
+def calculate_four_of_a_kind_probability(known_cards, simulations=4000):
+    if not known_cards:
+        return 0.0
+    full_deck = [(r, s) for r in '23456789TJQKA' for s in 'hdcs']
+    remaining = [c for c in full_deck if c not in known_cards]
+    hits = 0
+    for _ in range(simulations):
+        drawn = random.sample(remaining, 7 - len(known_cards))
+        all_cards = known_cards + drawn
+        ranks = [c[0] for c in all_cards]
+        if 4 in Counter(ranks).values():
+            hits += 1
+    return round((hits / simulations) * 100, 2)
+
+def calculate_straight_flush_probability(known_cards, simulations=4000):
+    if not known_cards:
+        return 0.0
+    def has_straight_flush(cards):
+        suits = {}
+        for r, s in cards:
+            suits.setdefault(s, []).append(RANK_MAPPING[r])
+        for suit_ranks in suits.values():
+            if 14 in suit_ranks:
+                suit_ranks.append(1)
+            suit_ranks = sorted(set(suit_ranks))
+            for i in range(len(suit_ranks) - 4):
+                if suit_ranks[i + 4] - suit_ranks[i] == 4 and all(
+                    suit_ranks[i + j] - suit_ranks[i] == j for j in range(5)
+                ):
+                    return True
+        return False
+    full_deck = [(r, s) for r in '23456789TJQKA' for s in 'hdcs']
+    remaining = [c for c in full_deck if c not in known_cards]
+    hits = 0
+    for _ in range(simulations):
+        drawn = random.sample(remaining, 7 - len(known_cards))
+        all_cards = known_cards + drawn
+        if has_straight_flush(all_cards):
+            hits += 1
+    return round((hits / simulations) * 100, 2)
+
+def calculate_three_of_a_kind_probability(known_cards, simulations=4000):
+    if not known_cards:
+        return 0.0
+    full_deck = [(r, s) for r in '23456789TJQKA' for s in 'hdcs']
+    remaining = [c for c in full_deck if c not in known_cards]
+    hits = 0
+    for _ in range(simulations):
+        drawn = random.sample(remaining, 7 - len(known_cards))
+        all_cards = known_cards + drawn
+        ranks = [c[0] for c in all_cards]
+        counts = list(Counter(ranks).values())
+        if 3 in counts and counts.count(2) == 0:
+            hits += 1
+    return round((hits / simulations) * 100, 2)
+
+def simulate_probabilities_with_existing_hand(known_cards, num_simulations=4000):
+    full_deck = [(r, s) for r in '23456789TJQKA' for s in 'hdcs']
+    remaining_cards = [c for c in full_deck if c not in known_cards]
+
+    flush_p = calculate_flush_probability(known_cards, simulations=num_simulations)
+    fullhouse_p = calculate_full_house_probability(known_cards, simulations=num_simulations)
+    straight_p = calculate_straight_probability(known_cards, simulations=num_simulations)
+    fourof_p = calculate_four_of_a_kind_probability(known_cards, simulations=num_simulations)
+    straightflush_p = calculate_straight_flush_probability(known_cards, simulations=num_simulations)
+    threeof_p = calculate_three_of_a_kind_probability(known_cards, simulations=num_simulations)
+
+    hand_counts = Counter()
+    for _ in range(num_simulations):
+        drawn = random.sample(remaining_cards, 7 - len(known_cards))
+        full_hand = known_cards + drawn
+        best = max(evaluate_hand(combo) for combo in combinations(full_hand, 5))
+        hand_counts[best] += 1
+
+    total = sum(hand_counts.values())
+    sim_probs = {hand: round((hand_counts.get(hand, 0) / total) * 100, 2) for hand in POKER_HAND_ORDER}
+
+    # Überschreiben
+    sim_probs["Flush"] = flush_p
+    sim_probs["Full House"] = fullhouse_p
+    sim_probs["Straight"] = straight_p
+    sim_probs["Four of a Kind"] = fourof_p
+    sim_probs["Straight Flush"] = straightflush_p
+    sim_probs["Three of a Kind"] = threeof_p
+
+    current_best = get_best_hand(known_cards)
+    current_index = POKER_HAND_ORDER.index(current_best)
+
+    probabilities = {}
+    for i, hand in enumerate(POKER_HAND_ORDER):
+        if i < current_index:
+            probabilities[hand] = 0.0
+        elif i == current_index:
+            probabilities[hand] = 100.0
+        else:
+            probabilities[hand] = sim_probs.get(hand, 0.0)
+
+    return probabilities, current_best
+
+def calculate():
+    for widget in table_frame.winfo_children():
+        widget.destroy()
+
+    known_cards = []
+    for r_var, s_var in hole_card_vars + community_card_vars:
+        r = r_var.get()
+        s = s_var.get()
+        if r != '?' and s != '?':
+            known_cards.append((r, s))
+
+    if len(known_cards) < 2:
+        result_label.config(text="Bitte mindestens zwei Karten eingeben.")
+        return
+
+    result_label.config(text="Wahrscheinlichkeiten der Pokerhände:")
+    probabilities, best_hand = simulate_probabilities_with_existing_hand(known_cards, num_simulations=4000)
+
+    best_possible = None
+    max_prob = 0
+    for hand in POKER_HAND_ORDER[::-1]:
+        if hand != best_hand and probabilities[hand] > max_prob:
+            best_possible = hand
+            max_prob = probabilities[hand]
+
+    header1 = tk.Label(table_frame, text="Hand", font=("Arial", 12, "bold"), bg="#1A001A", fg="white")
+    header2 = tk.Label(table_frame, text="Wahrscheinlichkeit", font=("Arial", 12, "bold"), bg="#1A001A", fg="white")
+    header1.grid(row=0, column=0, padx=10, pady=5, sticky="w")
+    header2.grid(row=0, column=1, padx=10, pady=5, sticky="w")
+
+    for i, hand in enumerate(POKER_HAND_ORDER, start=1):
+        prob = probabilities.get(hand, 0.0)
+        if hand == best_hand:
+            bg = "#2C8A4B"
+            font = ("Arial", 11, "bold")
+        elif hand == best_possible:
+            bg = "#D4A017"
+            font = ("Arial", 11, "bold")
+        else:
+            bg = "#1A001A"
+            font = ("Arial", 11)
+        tk.Label(table_frame, text=hand, bg=bg, fg="white", font=font).grid(row=i, column=0, sticky="w", padx=10)
+        tk.Label(table_frame, text=f"{prob}%", bg=bg, fg="white", font=font).grid(row=i, column=1, sticky="w", padx=10)
+
+# GUI
+root = tk.Tk()
+root.title("Poker Odds Bot")
+root.geometry("400x800")
+root.configure(bg="#1A001A")
+
+tk.Label(root, text="Chips: 500", bg="#1A001A", fg="white", font=("Arial", 14)).pack(pady=5)
+
+tk.Label(root, text="Deine Karten (Hole Cards):", bg="#1A001A", fg="white", font=("Arial", 13)).pack()
+hole_card_vars = []
+for i in range(2):
+    frame = ttk.Frame(root)
+    frame.pack(pady=2)
+    ttk.Label(frame, text=f"Karte {i+1}:").grid(row=0, column=0, padx=5)
+    rank = tk.StringVar(value="?")
+    suit = tk.StringVar(value="?")
+    ttk.Combobox(frame, textvariable=rank, values=RANKS, width=3).grid(row=0, column=1)
+    ttk.Combobox(frame, textvariable=suit, values=SUITS, width=3).grid(row=0, column=2)
+    hole_card_vars.append((rank, suit))
+
+tk.Label(root, text="Community Cards:", bg="#1A001A", fg="white", font=("Arial", 13)).pack()
+community_card_vars = []
+for i in range(5):
+    frame = ttk.Frame(root)
+    frame.pack(pady=2)
+    ttk.Label(frame, text=f"Karte {i+1}:").grid(row=0, column=0, padx=5)
+    rank = tk.StringVar(value="?")
+    suit = tk.StringVar(value="?")
+    ttk.Combobox(frame, textvariable=rank, values=RANKS, width=3).grid(row=0, column=1)
+    ttk.Combobox(frame, textvariable=suit, values=SUITS, width=3).grid(row=0, column=2)
+    community_card_vars.append((rank, suit))
+
+ttk.Button(root, text="Berechne Handstärke", command=calculate).pack(pady=10)
+result_label = tk.Label(root, text="", bg="#1A001A", fg="white", font=("Arial", 12))
+result_label.pack()
+table_frame = tk.Frame(root, bg="#1A001A")
+table_frame.pack(pady=5)
+
+root.mainloop()
