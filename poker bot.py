@@ -1,173 +1,148 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 from collections import Counter
+import random
 
-class PokerBot:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Poker Bot")
+# Kartenwerte & Farben
+RANKS = '23456789TJQKA'
+SUITS = 'hdcs'
+RANK_MAPPING = {r: i + 2 for i, r in enumerate(RANKS)}
 
-        # Vollbildmodus
-        self.root.attributes('-fullscreen', True)
-        
-        # Hintergrundfarbe für das Fenster (Schwarz)
-        self.root.config(bg="black")
-        
-        # Hauptrahmen für das Layout
-        self.main_frame = tk.Frame(root, bg="black")
-        self.main_frame.pack(fill=tk.BOTH, expand=True)
+# Startkapital
+player_chips = 500
 
-        # Linker Frame für die Ergebnisse (unten)
-        self.left_frame = tk.Frame(self.main_frame, bg="black")
-        self.left_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=10)
+# Berechne Wahrscheinlichkeit für bessere Hand
+def calculate_probability(strength):
+    remaining_cards = 52 - 5  # Deck ohne eigene Karten
+    better_hands = max(0, (100 - strength) / 100) * remaining_cards  # Je niedriger die Hand, desto mehr bessere gibt es
+    return round((better_hands / remaining_cards) * 100, 2)  # Wahrscheinlichkeit in %
 
-        # Rechter Frame für die Kartenauswahl (oben)
-        self.right_frame = tk.Frame(self.main_frame, bg="black")
-        self.right_frame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=10)
+# Pokerhand analysieren mit besserer Logik
+def evaluate_hand(cards):
+    ranks = sorted([RANK_MAPPING[c[0]] for c in cards], reverse=True)
+    suits = [c[1] for c in cards]
 
-        # Karten Eingabe (Label und Eingabefeld)
-        self.label = tk.Label(self.left_frame, text="Wähle deine Karten (z. B. Ass Herz):", fg="white", bg="black", font=("Helvetica", 14))
-        self.label.pack(pady=10)
+    rank_counts = Counter(ranks)
+    suit_counts = Counter(suits)
 
-        self.entry = tk.Entry(self.left_frame, font=("Helvetica", 14), bg="#7a4b96", fg="black")
-        self.entry.pack(pady=10)
+    is_flush = max(suit_counts.values()) == 5
+    is_straight = len(rank_counts) == 5 and max(ranks) - min(ranks) == 4
+    max_rank = max(ranks)
 
-        self.submit_button = tk.Button(self.left_frame, text="Analyse starten", command=self.analyze_hand, bg="#7a4b96", fg="black", font=("Helvetica", 14))
-        self.submit_button.pack(pady=20)
+    if is_straight and is_flush:
+        return 90 + max_rank  # Straight Flush
+    elif 4 in rank_counts.values():
+        return 80 + max_rank  # Vierling
+    elif sorted(rank_counts.values()) == [2, 3]:
+        return 70 + max_rank  # Full House
+    elif is_flush:
+        return 60 + max_rank  # Flush
+    elif is_straight:
+        return 50 + max_rank  # Straße
+    elif 3 in rank_counts.values():
+        return 40 + max_rank  # Drilling
+    elif list(rank_counts.values()).count(2) == 2:
+        return 30 + max_rank  # Zwei Paare
+    elif 2 in rank_counts.values():
+        return 20 + max_rank  # Ein Paar
+    return 10 + max_rank  # Hohe Karte
 
-        # Ergebnisbereich
-        self.result_label = tk.Label(self.left_frame, text="Ergebnis:", fg="white", bg="black", font=("Helvetica", 14))
-        self.result_label.pack()
+# Empfehlung für den Einsatz basierend auf Handstärke & Wahrscheinlichkeiten
+def get_recommended_action(strength, opponent_bet):
+    global player_chips
 
-        self.result_text = tk.Text(self.left_frame, height=15, width=50, bg="#7a4b96", fg="black", font=("Helvetica", 12))
-        self.result_text.pack()
+    if opponent_bet > player_chips:
+        return "Zu wenig Chips für diesen Call!"
 
-        # Karten als Buttons auf der rechten Seite anzeigen
-        self.cards = self.create_deck()
-        self.card_buttons = []
-        for card in self.cards:
-            button = tk.Button(self.right_frame, text=card, command=lambda card=card: self.select_card(card), bg="#7a4b96", fg="black", font=("Helvetica", 10), height=1, width=10)
-            button.pack(side=tk.LEFT, padx=5, pady=5)
-            self.card_buttons.append(button)
+    probability = calculate_probability(strength)
+    pot_odds = opponent_bet / (player_chips + opponent_bet)
 
-    def create_deck(self):
-        """Erstellt ein Standarddeck mit Karten und deren vollständigen Namen"""
-        ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']  # Ass wurde hier hinzugefügt
-        suits = ['Herz', 'Karo', 'Kreuz', 'Pik']
-        deck = [f"{rank} {suit}" for rank in ranks for suit in suits]
-        return deck
+    if probability < 10:  
+        return "All-In! Starke Hand."
+    elif probability < 25:  
+        return "Call oder kleiner Raise."
+    elif probability < 40:  
+        return "Call mit Vorsicht."
+    elif probability < 60:  
+        return "Check oder kleiner Call."
+    return "Fold – hohe Wahrscheinlichkeit einer besseren Hand."
 
-    def select_card(self, card):
-        """Fügt eine ausgewählte Karte in das Eingabefeld ein"""
-        current_text = self.entry.get()
-        if current_text:
-            self.entry.insert(tk.END, " " + card)
-        else:
-            self.entry.insert(tk.END, card)
+# Berechnung & Anzeige
+def calculate():
+    global player_chips
+    try:
+        cards = [(rank_vars[i].get(), suit_vars[i].get()) for i in range(5)]
+        strength = evaluate_hand(cards)
+        probability = calculate_probability(strength)
 
-    def analyze_hand(self):
-        hand_input = self.entry.get()
-        cards = hand_input.split()
+        result_label.config(text=f"Handstärke: {strength}\nChance auf bessere Hand: {probability}%")
 
-        if len(cards) != 2:
-            messagebox.showerror("Fehler", "Bitte genau zwei Karten eingeben!")
-            return
+    except Exception as e:
+        result_label.config(text=f"Fehler: {e}")
 
-        try:
-            result, strategy, decision = self.evaluate_hand(cards)
-            self.result_text.delete(1.0, tk.END)
-            self.result_text.insert(tk.END, result + "\n\n" + strategy + "\n\n" + decision)
-        except ValueError as e:
-            messagebox.showerror("Fehler", str(e))
+# Gegnerreaktion
+def evaluate_opponent():
+    global player_chips
+    try:
+        opponent_bet = int(opponent_bet_entry.get())
+        strength = int(result_label.cget("text").split(":")[1].split("\n")[0])
+        recommendation = get_recommended_action(strength, opponent_bet)
 
-    def evaluate_hand(self, cards):
-        # Poker-Ranking-Berechnung: Vereinfachte Analyse
-        ranks = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}
-        suits = ['Herz', 'Karo', 'Kreuz', 'Pik']
+        if opponent_bet <= player_chips:
+            player_chips -= opponent_bet
+            chip_label.config(text=f"Chips: {player_chips}")
 
-        parsed_cards = []
-        for card in cards:
-            rank, suit = card.split()
-            if rank not in ranks or suit not in suits:
-                raise ValueError(f"Ungültige Karte: {card}")
-            parsed_cards.append((ranks[rank], suit))
+        action_label.config(text=f"Empfehlung: {recommendation}")
 
-        ranks_only = [card[0] for card in parsed_cards]
-        suits_only = [card[1] for card in parsed_cards]
+    except ValueError:
+        messagebox.showwarning("Fehler", "Bitte gib eine gültige Zahl für den gegnerischen Einsatz ein!")
 
-        # Evaluierung der Hand (z. B. Paar, gleiche Farbe, etc.)
-        result = self.detect_hand(parsed_cards, ranks_only, suits_only)
+# GUI erstellen
+root = tk.Tk()
+root.title("Poker Bot")
+root.geometry("400x650")
+root.configure(bg="#1A001A")
 
-        # Strategie basierend auf der Hand
-        strategy = self.develop_strategy(result)
+style = ttk.Style()
+style.configure("TButton", background="#800080", foreground="white", font=("Arial", 12), padding=5)
+style.configure("TLabel", background="#1A001A", foreground="white", font=("Arial", 12))
 
-        # Entscheidung basierend auf der Strategie
-        decision = self.make_decision(result)
+# Chip-Anzeige
+chip_label = ttk.Label(root, text=f"Chips: {player_chips}", background="#1A001A", foreground="white", font=("Arial", 14))
+chip_label.pack(pady=5)
 
-        return f"Karten: {cards}\n{result}", strategy, decision
+# Kartenwahl
+ttk.Label(root, text="Wähle deine Karten:", background="#1A001A", foreground="white", font=("Arial", 14)).pack(pady=5)
 
-    def detect_hand(self, parsed_cards, ranks_only, suits_only):
-        result = []
-        rank_counts = Counter(ranks_only)
-        is_flush = len(set(suits_only)) == 1
-        sorted_ranks = sorted(ranks_only)
-        is_straight = all(sorted_ranks[i] + 1 == sorted_ranks[i + 1] for i in range(len(sorted_ranks) - 1))
+rank_vars = [tk.StringVar(value="A") for _ in range(5)]
+suit_vars = [tk.StringVar(value="h") for _ in range(5)]
 
-        # Bewertung von speziellen Händen
-        if is_flush and sorted_ranks == [10, 11, 12, 13, 14]:
-            result.append("Royal Flush")
-        elif is_flush and is_straight:
-            result.append("Straight Flush")
-        elif 4 in rank_counts.values():
-            result.append("Four of a Kind")
-        elif 3 in rank_counts.values() and 2 in rank_counts.values():
-            result.append("Full House")
-        elif is_flush:
-            result.append("Flush")
-        elif is_straight:
-            result.append("Straight")
-        elif 3 in rank_counts.values():
-            result.append("Three of a Kind")
-        elif list(rank_counts.values()).count(2) == 2:
-            result.append("Two Pair")
-        elif 2 in rank_counts.values():
-            result.append("One Pair")
-        else:
-            result.append("High Card")
+for i in range(5):
+    frame = ttk.Frame(root)
+    frame.pack(pady=2)
+    ttk.Label(frame, text=f"Karte {i+1}:", background="#1A001A", foreground="white").grid(row=0, column=0, padx=5)
+    ttk.Combobox(frame, textvariable=rank_vars[i], values=list(RANK_MAPPING.keys()), width=3).grid(row=0, column=1)
+    ttk.Combobox(frame, textvariable=suit_vars[i], values=list(SUITS), width=3).grid(row=0, column=2)
 
-        return " und ".join(result)
+# Button für Berechnung
+calc_button = ttk.Button(root, text="Berechne Handstärke", command=calculate)
+calc_button.pack(pady=10)
 
-    def develop_strategy(self, hand_type):
-        # Erweiterte Strategie für spezifische Handtypen
-        if "Royal Flush" in hand_type or "Straight Flush" in hand_type:
-            return "Strategie: Gehe All-In, da dies die stärksten Hände im Poker sind."
-        elif "Four of a Kind" in hand_type or "Full House" in hand_type:
-            return "Strategie: Erhöhe den Einsatz stark, da dies extrem starke Hände sind."
-        elif "Flush" in hand_type or "Straight" in hand_type:
-            return "Strategie: Spiele aggressiv, da diese Hände stark sind."
-        elif "Three of a Kind" in hand_type or "Two Pair" in hand_type:
-            return "Strategie: Spiele vorsichtig, aber setze, um Druck auszuüben."
-        elif "One Pair" in hand_type:
-            return "Strategie: Ziehe Mitgehen oder einen kleinen Einsatz in Betracht."
-        else:
-            return "Strategie: Überlege zu passen, da die Hand schwach ist."
+# Ergebnisanzeige
+result_label = ttk.Label(root, text="", background="#1A001A", foreground="white", font=("Arial", 12))
+result_label.pack(pady=10)
 
-    def make_decision(self, hand_type):
-        # Erweiterte Entscheidungslogik basierend auf Handtyp
-        if "Royal Flush" in hand_type or "Straight Flush" in hand_type:
-            return "Entscheidung: All-In"
-        elif "Four of a Kind" in hand_type or "Full House" in hand_type:
-            return "Entscheidung: Raise (Erhöhen)"
-        elif "Flush" in hand_type or "Straight" in hand_type:
-            return "Entscheidung: Raise"
-        elif "Three of a Kind" in hand_type or "Two Pair" in hand_type:
-            return "Entscheidung: Call (Mitgehen)"
-        elif "One Pair" in hand_type:
-            return "Entscheidung: Check (Abwarten)"
-        else:
-            return "Entscheidung: Fold (Passen)"
+# Gegner-Einsatz Eingabe
+ttk.Label(root, text="Gegnerischer Einsatz:", background="#1A001A", foreground="white").pack(pady=5)
+opponent_bet_entry = ttk.Entry(root)
+opponent_bet_entry.pack(pady=5)
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = PokerBot(root)
-    root.mainloop()
+# Button für Gegnerreaktion
+evaluate_button = ttk.Button(root, text="Reagiere auf Gegner", command=evaluate_opponent)
+evaluate_button.pack(pady=10)
+
+# Ergebnis der Gegneraktion
+action_label = ttk.Label(root, text="", background="#1A001A", foreground="white", font=("Arial", 12))
+action_label.pack(pady=10)
+
+root.mainloop()
