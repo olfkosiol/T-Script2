@@ -1,4 +1,4 @@
-import tkinter as tk
+import tkinter as tk #pip install tkinter
 from tkinter import ttk, messagebox
 from collections import Counter
 import random
