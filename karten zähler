@@ -1,0 +1,113 @@
+import tkinter as tk
+from tkinter import messagebox
+import os
+
+# Werte & Farben
+farben = ["♠ Pik", "♥ Herz", "♦ Karo", "♣ Kreuz"]
+werte = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "Bube", "Dame", "König", "Ass"]
+
+alle_karten = [f"{farbe} {wert}" for farbe in farben for wert in werte]
+
+# Dateipfade
+DATEI_AUSWAHL = "karten.txt"
+DATEI_VERBLEIBEND = "verbleibende_karten.txt"
+
+# Starte mit verbleibenden Karten aus Datei, falls vorhanden
+if os.path.exists(DATEI_VERBLEIBEND):
+    with open(DATEI_VERBLEIBEND, "r", encoding="utf-8") as f:
+        verbleibende_karten = [zeile.strip() for zeile in f if zeile.strip()]
+else:
+    verbleibende_karten = alle_karten.copy()
+
+auswahl = []
+
+def karte_geklickt(karte):
+    if karte in auswahl:
+        auswahl.remove(karte)
+    elif karte in verbleibende_karten:
+        auswahl.append(karte)
+    update_anzeige()
+
+def update_anzeige():
+    label_auswahl.config(text="Ausgewählt:\n" + ", ".join(auswahl))
+    update_verbleibend()
+
+def update_verbleibend():
+    aktuell = [k for k in verbleibende_karten if k not in auswahl]
+    label_verbleibend.config(text=f"Im Spiel ({len(aktuell)}):\n" + ", ".join(aktuell))
+
+def speichern():
+    global verbleibende_karten
+    if not auswahl:
+        messagebox.showwarning("Keine Karten", "Bitte wähle Karten aus.")
+        return
+
+    # Auswahl anhängen
+    with open(DATEI_AUSWAHL, "a", encoding="utf-8") as f:
+        for k in auswahl:
+            f.write(k + "\n")
+        f.write("-" * 30 + "\n")
+
+    # Verbleibende Liste aktualisieren
+    verbleibende_karten = [k for k in verbleibende_karten if k not in auswahl]
+
+    with open(DATEI_VERBLEIBEND, "w", encoding="utf-8") as f:
+        for k in verbleibende_karten:
+            f.write(k + "\n")
+
+    messagebox.showinfo("Gespeichert", "Karten wurden gespeichert und entfernt.")
+    auswahl.clear()
+    update_anzeige()
+
+# GUI Setup
+root = tk.Tk()
+root.title("Karten Auswahl")
+root.geometry("900x600")
+root.configure(bg="#121212")
+
+# Farben
+bg_color = "#121212"
+fg_color = "#FFFFFF"
+button_bg = "#1E1E1E"
+button_active = "#333333"
+highlight_color = "#2A82DA"
+
+# Karten Buttons
+frame_karten = tk.Frame(root, bg=bg_color)
+frame_karten.pack(pady=10)
+
+for farbe in farben:
+    frame = tk.Frame(frame_karten, bg=bg_color)
+    frame.pack(side=tk.TOP, anchor="w", padx=10)
+    for wert in werte:
+        karte = f"{farbe} {wert}"
+        btn = tk.Button(
+            frame,
+            text=karte,
+            width=10,
+            bg=button_bg,
+            fg=fg_color,
+            activebackground=button_active,
+            activeforeground=highlight_color,
+            command=lambda k=karte: karte_geklickt(k)
+        )
+        btn.pack(side=tk.LEFT, padx=2, pady=2)
+
+# Anzeigen
+label_auswahl = tk.Label(root, text="Ausgewählt:", font=("Arial", 12),
+                         bg=bg_color, fg=fg_color, wraplength=800, justify="left")
+label_auswahl.pack(pady=10)
+
+label_verbleibend = tk.Label(root, text="Im Spiel:", font=("Arial", 12),
+                             bg=bg_color, fg="#AAAAAA", wraplength=800, justify="left")
+label_verbleibend.pack(pady=10)
+
+# Speichern
+btn_speichern = tk.Button(root, text="Speichern", command=speichern,
+                          bg=highlight_color, fg="white", font=("Arial", 12))
+btn_speichern.pack(pady=10)
+
+# Erstes Update
+update_anzeige()
+
+root.mainloop()
