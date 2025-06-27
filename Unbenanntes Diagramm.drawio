@@ -1,0 +1,134 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.9 Chrome/134.0.6998.205 Electron/35.4.0 Safari/537.36" version="27.0.9">
+  <diagram name="Seite-1" id="aiHEo6HqIYHhDG3Se-Ib">
+    <mxGraphModel dx="1118" dy="655" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2339" pageHeight="3300" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <UserObject label="daten synchroniesieren" treeRoot="1" id="3dVM7cbgS18q4HR6wwMa-2">
+          <mxCell style="whiteSpace=wrap;html=1;align=center;treeFolding=1;treeMoving=1;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;startArrow&quot;:&quot;none&quot;,&quot;endArrow&quot;:&quot;none&quot;};" vertex="1" parent="1">
+            <mxGeometry x="1415" y="840" width="120" height="60" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="erechnen ob der gegner blufft" treeRoot="1" id="3dVM7cbgS18q4HR6wwMa-3">
+          <mxCell style="whiteSpace=wrap;html=1;align=center;treeFolding=1;treeMoving=1;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;startArrow&quot;:&quot;none&quot;,&quot;endArrow&quot;:&quot;none&quot;};" vertex="1" parent="1">
+            <mxGeometry x="1265" y="980" width="120" height="60" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-34" style="edgeStyle=elbowEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;endArrow=none;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="3dVM7cbgS18q4HR6wwMa-4" target="3dVM7cbgS18q4HR6wwMa-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <UserObject label="mitgehen/raus" treeRoot="1" id="3dVM7cbgS18q4HR6wwMa-4">
+          <mxCell style="whiteSpace=wrap;html=1;align=center;treeFolding=1;treeMoving=1;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;startArrow&quot;:&quot;none&quot;,&quot;endArrow&quot;:&quot;none&quot;};" vertex="1" parent="1">
+            <mxGeometry x="1070" y="930" width="120" height="60" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-23" style="edgeStyle=elbowEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;endArrow=classic;startFill=0;endFill=1;" edge="1" parent="1" source="3dVM7cbgS18q4HR6wwMa-5">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1250" y="760" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <UserObject label="eigene karten angeben" treeRoot="1" id="3dVM7cbgS18q4HR6wwMa-5">
+          <mxCell style="whiteSpace=wrap;html=1;align=center;treeFolding=1;treeMoving=1;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;startArrow&quot;:&quot;none&quot;,&quot;endArrow&quot;:&quot;none&quot;};fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" vertex="1" collapsed="1" parent="1">
+            <mxGeometry x="970" y="720" width="120" height="60" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="welche karten im spiel sind" treeRoot="1" id="3dVM7cbgS18q4HR6wwMa-7">
+          <mxCell style="whiteSpace=wrap;html=1;align=center;treeFolding=1;treeMoving=1;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;startArrow&quot;:&quot;none&quot;,&quot;endArrow&quot;:&quot;none&quot;};" vertex="1" parent="1">
+            <mxGeometry x="1255" y="720" width="120" height="60" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-8" value="" style="shape=datastore;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" vertex="1" parent="1">
+          <mxGeometry x="1265" y="820" width="90" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="3dVM7cbgS18q4HR6wwMa-10" target="3dVM7cbgS18q4HR6wwMa-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-10" value="tabelle mit daten" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1285" y="853.5" width="60" height="33" as="geometry" />
+        </mxCell>
+        <UserObject label="wie viele chips wir setzten sollen" treeRoot="1" id="3dVM7cbgS18q4HR6wwMa-11">
+          <mxCell style="whiteSpace=wrap;html=1;align=center;treeFolding=1;treeMoving=1;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;startArrow&quot;:&quot;none&quot;,&quot;endArrow&quot;:&quot;none&quot;};" vertex="1" parent="1">
+            <mxGeometry x="1070" y="1040" width="120" height="60" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="karten auf den tisch angeben" treeRoot="1" id="3dVM7cbgS18q4HR6wwMa-12">
+          <mxCell style="whiteSpace=wrap;html=1;align=center;treeFolding=1;treeMoving=1;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;startArrow&quot;:&quot;none&quot;,&quot;endArrow&quot;:&quot;none&quot;};fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" vertex="1" parent="1">
+            <mxGeometry x="1060" y="810" width="120" height="60" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Organization" treeRoot="1" id="3dVM7cbgS18q4HR6wwMa-14">
+          <mxCell style="whiteSpace=wrap;html=1;align=center;treeFolding=1;treeMoving=1;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;startArrow&quot;:&quot;none&quot;,&quot;endArrow&quot;:&quot;none&quot;};" vertex="1" parent="1">
+            <mxGeometry x="1145" y="1160" width="120" height="60" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-16" style="edgeStyle=elbowEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;endArrow=none;exitX=1;exitY=0.25;exitDx=0;exitDy=0;" edge="1" parent="1" source="3dVM7cbgS18q4HR6wwMa-12" target="3dVM7cbgS18q4HR6wwMa-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-24" style="edgeStyle=elbowEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;endArrow=classic;entryX=0.556;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;endFill=1;" edge="1" parent="1" source="3dVM7cbgS18q4HR6wwMa-7" target="3dVM7cbgS18q4HR6wwMa-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-27" style="edgeStyle=elbowEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;endArrow=none;entryX=0.003;entryY=0.941;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="3dVM7cbgS18q4HR6wwMa-12" target="3dVM7cbgS18q4HR6wwMa-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-28" style="edgeStyle=elbowEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;endArrow=none;entryX=0.714;entryY=-0.005;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="3dVM7cbgS18q4HR6wwMa-5">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="950.6799999999998" y="839.7" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-29" style="edgeStyle=elbowEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;endArrow=none;entryX=0.99;entryY=0.419;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="3dVM7cbgS18q4HR6wwMa-12">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="983.8000000000002" y="865.1399999999999" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.368;entryY=-0.052;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="3dVM7cbgS18q4HR6wwMa-8" target="3dVM7cbgS18q4HR6wwMa-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-32" style="edgeStyle=elbowEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;endArrow=none;entryX=1.002;entryY=0.399;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="3dVM7cbgS18q4HR6wwMa-3" target="3dVM7cbgS18q4HR6wwMa-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-43" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="3dVM7cbgS18q4HR6wwMa-35" target="3dVM7cbgS18q4HR6wwMa-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-35" value="List" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;" vertex="1" parent="1">
+          <mxGeometry x="770" y="840" width="210" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-36" value="combos möglich sind" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="3dVM7cbgS18q4HR6wwMa-35">
+          <mxGeometry y="26" width="210" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-37" value="was für karten können wir bekommen" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="3dVM7cbgS18q4HR6wwMa-35">
+          <mxGeometry y="52" width="210" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-38" value="handerwert ererchnen" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="3dVM7cbgS18q4HR6wwMa-35">
+          <mxGeometry y="78" width="210" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-49" style="edgeStyle=elbowEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;endArrow=none;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="3dVM7cbgS18q4HR6wwMa-48" target="3dVM7cbgS18q4HR6wwMa-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-50" style="edgeStyle=elbowEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;endArrow=none;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="3dVM7cbgS18q4HR6wwMa-48" target="3dVM7cbgS18q4HR6wwMa-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <UserObject label="wie viele chips wir haben" treeRoot="1" id="3dVM7cbgS18q4HR6wwMa-48">
+          <mxCell style="whiteSpace=wrap;html=1;align=center;treeFolding=1;treeMoving=1;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;startArrow&quot;:&quot;none&quot;,&quot;endArrow&quot;:&quot;none&quot;};fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" vertex="1" parent="1">
+            <mxGeometry x="860" y="1020" width="120" height="60" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-52" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.799;exitY=1.168;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="3dVM7cbgS18q4HR6wwMa-38">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="960" y="985" as="sourcePoint" />
+            <mxPoint x="1060" y="1040" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="3dVM7cbgS18q4HR6wwMa-54" style="edgeStyle=elbowEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;endArrow=none;" edge="1" parent="1" source="3dVM7cbgS18q4HR6wwMa-53">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1060" y="1090" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <UserObject label="wie viele chips setzt der gegner" treeRoot="1" id="3dVM7cbgS18q4HR6wwMa-53">
+          <mxCell style="whiteSpace=wrap;html=1;align=center;treeFolding=1;treeMoving=1;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;startArrow&quot;:&quot;none&quot;,&quot;endArrow&quot;:&quot;none&quot;};fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" vertex="1" parent="1">
+            <mxGeometry x="860" y="1100" width="120" height="60" as="geometry" />
+          </mxCell>
+        </UserObject>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
